@@ -1,22 +1,3 @@
-// @ts-nocheck
-/**
- * This is publish plugin, it allows you to publish your application commands using the discord.js library with ease.
- *
- * @author @EvolutionX-10 [<@697795666373640213>]
- * @version 2.0.0
- * @example
- * ```ts
- * import { publish } from "../plugins/publish";
- * import { commandModule } from "@sern/handler";
- * export default commandModule({
- *  plugins: [ publish() ], // put an object containing permissions, ids for guild commands, boolean for dmPermission
- *  // plugins: [ publish({ guildIds: ['guildId'], defaultMemberPermissions: 'Administrator'})]
- *  execute: (ctx) => {
- * 		//your code here
- *  }
- * })
- * ```
- */
 import {
 	CommandPlugin,
 	CommandType,
@@ -29,10 +10,7 @@ import {
 	ApplicationCommandType,
 	PermissionResolvable,
 } from "discord.js";
-/**
- * This is the dependency getter that is created from Sern.makeDependencies.
- * import it here so that this plugin has access to your bot's dependencies
- */
+
 import { useContainer } from "../index.js";
 
 export function publish(

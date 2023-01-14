@@ -1,0 +1,14 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Guild {
+  id          String        @id @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
