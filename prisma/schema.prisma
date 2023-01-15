@@ -1,14 +1,62 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 model Guild {
-  id          String        @id @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+    id        String     @id @unique
+    settings  Settings[]
+    guildType GuildType  @default(NORMAL)
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model Users {
+    id        String      @id @unique
+    userType  UserType    @default(NORMAL)
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+    leveling  Leveling[]
+    inventory Inventory[]
+}
+
+model Leveling {
+    currentXp Int @default(0)
+    level     Int @default(1)
+    userId    String
+    user      Users  @relation(fields: [userId], references: [id])
+
+    @@id([userId])
+}
+
+model Inventory {
+    items  Json?  @default("[]")
+    userId String
+    user   Users  @relation(fields: [userId], references: [id])
+
+    @@id([userId])
+}
+
+model Settings {
+    id        String      @id @default(cuid())
+    guildId  String?
+    guild    Guild?  @relation(fields: [guildId], references: [id])
+    prefix   String  @default("?")
+    leveling Boolean @default(false)
+}
+
+enum UserType {
+    NORMAL
+    PREMIUM
+    STAFF
+    DEV
+}
+
+enum GuildType {
+    NORMAL
+    PREMIUM
 }

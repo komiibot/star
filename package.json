@@ -15,7 +15,8 @@
     "prisma:gen": "npx prisma generate && npx prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
     "build": "tsc && tsc-alias",
-    "dev": "ts-node-dev --exit-child -r tsconfig-paths/register src/index.ts",
+    "dev2": "ts-node-dev --exit-child -r tsconfig-paths/register src/index.ts",
+    "dev": "nodemon src/index.ts",
     "start": "ts-node -r tsconfig-paths/register src/index.ts"
   },
   "devDependencies": {
@@ -34,6 +35,8 @@
     "@prisma/client": "^4.8.1",
     "@prisma/engines": "^4.8.1",
     "@sern/handler": "^2.1.1",
+    "chalk": "^4.1.2",
+    "complexity-report": "2.0.0-alpha",
     "dayjs": "^1.11.7",
     "discord.js": "^14.7.1",
     "node-cron": "^3.0.2",
