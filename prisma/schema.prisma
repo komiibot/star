@@ -38,6 +38,7 @@ model Users {
     inventory     Inventory[]
     GuildUsers    GuildUsers[]
     UserBlacklist UserBlacklist[]
+    Economy       Economy[]
 }
 
 model GuildUsers {
@@ -62,6 +63,16 @@ model Inventory {
     items  Item[]
     userId String
     user   Users  @relation(fields: [userId], references: [id])
+
+    @@id([userId])
+}
+
+model Economy {
+    cash     Int    @default(200)
+    bank     Int    @default(0)
+    networth Int    @default(200)
+    userId   String
+    user     Users  @relation(fields: [userId], references: [id])
 
     @@id([userId])
 }

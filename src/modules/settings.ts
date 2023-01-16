@@ -64,6 +64,11 @@ export async function createUser(user: GuildMember): Promise<unknown> {
             id: user.id
         }
     })
+    await prisma.leveling.create({
+        data: {
+            userId: user.id
+        }
+    });
 }
 
 export async function findUser(user: GuildMember): Promise<unknown> {
