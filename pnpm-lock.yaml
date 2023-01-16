@@ -14,6 +14,7 @@ specifiers:
   dotenv: ^16.0.3
   fs: 0.0.1-security
   gen-env-types: ^1.3.4
+  ms: ^2.1.3
   node-cron: ^3.0.2
   nodemon: ^2.0.20
   prisma: ^4.8.1
@@ -34,6 +35,7 @@ dependencies:
   discord-card-canvas: 1.2.3
   discord.js: 14.7.1
   fs: 0.0.1-security
+  ms: 2.1.3
   node-cron: 3.0.2
   tsconfig-paths: 4.1.2
   util: 0.12.5
@@ -927,7 +929,6 @@ packages:
 
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
-    dev: true
 
   /mylas/2.1.13:
     resolution: {integrity: sha512-+MrqnJRtxdF+xngFfUUkIMQrUUL0KsxbADUkn23Z/4ibGg192Q+z+CQyiYwvWTsYjJygmMR8+w3ZDa98Zh6ESg==}
