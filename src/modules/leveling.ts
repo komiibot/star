@@ -7,8 +7,8 @@ import { log } from "./index";
 // const complexityThreshold = 5;
 
 const ratelimit = 60000;
-const filter = new Map();
-const users = new Map();
+const cooldown = new Map();
+
 
 export function GetGlobalXP(lvl: number): number {
     return Math.trunc((lvl-1 + 2*300*Math.pow(2,(lvl-1)/7))/4);
@@ -23,8 +23,8 @@ function between(min: number, max: number): number {
 }
 
 export function AddXP(msg: Message, userType: string) {
-    let random = between(20, 100);
-    if(userType === "PREMIUM") random = between(40, 180);
+    let random = between(20, 40);
+    if(userType === "STAFF" || userType === "DEV") random = between(40, 180);
     return Math.trunc(random + 1 + (0.1 * msg.content.length))
 }
 
@@ -41,39 +41,26 @@ export async function GetUserXP(user: string) {
 }
 
 export async function levelHandler(msg: Message, levels: Leveling, user: Users): Promise<void> {
-    // Is user on a cooldown?
-    if(users.has(msg.author.id)) {
-        const lastTimestamp = users.get(msg.author.id);
-        const currentTimestamp = Date.now();
-        if(currentTimestamp - lastTimestamp < 5000) {
-            return;
-        }
+    // Cooldowns
+    if(!cooldown.has(msg.author.id)) {
+        cooldown.set(msg.author.id, 0);
     }
-    users.set(msg.author.id, Date.now());
 
-    // Spam Filter
-    if(filter.has(msg.author.id)) {
-        const messageCount = filter.get(msg.author.id);
-        if (messageCount >= 10) {
-            return;
-        }
-        filter.set(msg.author.id, messageCount + 1);
-    } else {
-        filter.set(msg.author.id, 0);
+    if(cooldown.has(msg.author.id)) {
+        let messageCount = cooldown.get(msg.author.id);
+        console.log(messageCount)
+        if(messageCount >= 4) return;
+        cooldown.set(msg.author.id, messageCount ? messageCount + 1 : 1);
     }
 
     setTimeout(() => {
-        filter.set(msg.author.id, 0);
+        cooldown.set(msg.author.id, 0);
     }, ratelimit);
 
-    // const report = complexity.text(msg.content, { ignoreCommonWords: true });
-    // if (report.score < complexityThreshold) {
-    //   return;
-    // }
-
     // Give user XP
-    if(users.has(msg.author.id)) {
+    if(user) {
         let currentXp = levels.currentXp;
+
         currentXp += AddXP(msg, user.userType)
         await prisma.leveling.update({
             where: {
@@ -96,10 +83,8 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
 
     let currentLevel: number;
     let LevelUpXP = GetGlobalXP(levels.level+1);
-    console.log("Hi", GetGlobalXP(levels.level+1))
     for (let i = 1; i < levels.level; i++) {
         LevelUpXP += GetGlobalXP(i);
-        console.log("Hi2", GetGlobalXP(i))
     }
 
     if(levels.currentXp >= LevelUpXP) {

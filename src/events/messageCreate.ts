@@ -15,7 +15,7 @@ export default eventModule({
       await findGuild(msg.guild!);
       await getSettings(msg.guild!);
 
-      const settings = await prisma.settings.findFirst({
+    const settings = await prisma.settings.findFirst({
         where: {
             guildId: msg?.guild.id,
         },

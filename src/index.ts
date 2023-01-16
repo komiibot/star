@@ -18,13 +18,13 @@ export const prisma = new PrismaClient();
 
 interface MyDependencies extends Dependencies {
 	"@sern/client": Singleton<Client>;
-	// "@sern/logger": Singleton<DefaultLogging>
+	"@sern/logger": Singleton<DefaultLogging>
 }
 
 export const useContainer = Sern.makeDependencies<MyDependencies>({
 	build: root => root
 		.add({ "@sern/client": single(client) })
-		// .add({ "@sern/logger": single(new DefaultLogging()) })
+		.add({ "@sern/logger": single(new DefaultLogging()) })
 });
 
 Sern.init({
@@ -46,6 +46,6 @@ const logo = ` ███▄    █ ▓█████  ██ ▄█▀ ▒█�
   ░   ░ ░    ░   ░ ░░ ░ ░ ░ ░ ▒  ░      ░    ▒ ░
 		░    ░  ░░  ░       ░ ░         ░    ░  
 												`
-console.log(chalk.red(logo));
+console.log(chalk.magenta(logo));
 
 client.login(process.env.TOKEN);

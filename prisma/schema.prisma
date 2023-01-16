@@ -7,26 +7,51 @@ generator client {
     provider = "prisma-client-js"
 }
 
+model UserBlacklist {
+    id     String @id @unique
+    user   Users  @relation(fields: [userId], references: [id])
+    userId String
+}
+
+model GuildBlacklist {
+    id      String @id @unique
+    guild   Guild  @relation(fields: [guildId], references: [id])
+    guildId String
+}
+
 model Guild {
-    id        String     @id @unique
-    settings  Settings[]
-    guildType GuildType  @default(NORMAL)
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
+    id             String           @id @unique
+    settings       Settings[]
+    guildType      GuildType        @default(NORMAL)
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    GuildUsers     GuildUsers[]
+    GuildBlacklist GuildBlacklist[]
 }
 
 model Users {
-    id        String      @id @unique
-    userType  UserType    @default(NORMAL)
-    createdAt DateTime    @default(now())
-    updatedAt DateTime    @updatedAt
-    leveling  Leveling[]
-    inventory Inventory[]
+    id            String          @id @unique
+    userType      UserType        @default(NORMAL)
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    leveling      Leveling[]
+    inventory     Inventory[]
+    GuildUsers    GuildUsers[]
+    UserBlacklist UserBlacklist[]
+}
+
+model GuildUsers {
+    guildId String
+    guild   Guild  @relation(fields: [guildId], references: [id])
+    userId  String
+    user    Users  @relation(fields: [userId], references: [id])
+
+    @@id([guildId, userId])
 }
 
 model Leveling {
-    currentXp Int @default(0)
-    level     Int @default(1)
+    currentXp Int    @default(0)
+    level     Int    @default(1)
     userId    String
     user      Users  @relation(fields: [userId], references: [id])
 
@@ -34,15 +59,26 @@ model Leveling {
 }
 
 model Inventory {
-    items  Json?  @default("[]")
+    items  Item[]
     userId String
     user   Users  @relation(fields: [userId], references: [id])
 
     @@id([userId])
 }
 
+model Item {
+    id              String     @id @default(cuid())
+    name            String     @default("")
+    description     String     @default("")
+    limited         Boolean    @default(false)
+    durability      Int        @default(100)
+    type            ItemType
+    Inventory       Inventory? @relation(fields: [inventoryUserId], references: [userId])
+    inventoryUserId String?
+}
+
 model Settings {
-    id        String      @id @default(cuid())
+    id       String  @id @default(cuid())
     guildId  String?
     guild    Guild?  @relation(fields: [guildId], references: [id])
     prefix   String  @default("?")
@@ -59,4 +95,18 @@ enum UserType {
 enum GuildType {
     NORMAL
     PREMIUM
+}
+
+enum ItemType {
+    CARD
+    TOOL
+    COLLECTABLE
+    PACK
+}
+
+enum Powers {
+    FIRE
+    WATER
+    EARTH
+    WIND
 }

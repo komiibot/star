@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Item" ALTER COLUMN "name" SET DEFAULT '',
+ALTER COLUMN "description" SET DEFAULT '',
+ALTER COLUMN "limited" SET DEFAULT false,
+ALTER COLUMN "durability" SET DEFAULT 100;
