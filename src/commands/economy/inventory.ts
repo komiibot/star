@@ -8,7 +8,6 @@ export default commandModule({
     description: "Check your, or someone elses balance.",
     alias : [],
     execute: async (ctx, args) => {
-
         const economy = await prisma.economy.findFirst({
             where: {
                 userId: ctx?.message.author.id,
