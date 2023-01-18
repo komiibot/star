@@ -1,2 +1,2 @@
 # Bot
-Discord Service for the bot itself.
+Discord service for the bot itself.
