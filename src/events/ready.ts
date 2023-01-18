@@ -5,6 +5,6 @@ export default eventModule({
     plugins : [],
     name: "ready",
     async execute() {
-      console.log("Client is online and ready"); 
+      console.log("Ready and logged in.")
     }
   });

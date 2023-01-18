@@ -5,6 +5,9 @@
   "repository": "git@github.com:nekomiuwu/star.git",
   "main": "build/index.js",
   "license": "UNLICENSED",
+  "prisma" : {
+    "schema": "./prisma/schema.prisma"
+  },
   "keywords": [
     "typescript",
     "sern",
