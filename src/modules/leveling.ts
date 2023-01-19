@@ -1,10 +1,7 @@
 import { Leveling, Users } from "@prisma/client";
 import { Message } from "discord.js";
 import { prisma } from "../index";
-import { log } from "./index";
-
-// const complexity = require('complexity-report');
-// const complexityThreshold = 5;
+import { log } from "#utils/logger";
 
 const ratelimit = 60000;
 const cooldown = new Map();
@@ -55,10 +52,10 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
 
     setTimeout(() => {
         cooldown.set(msg.author.id, 0);
-    }, 3000);
+    }, ratelimit);
 
     // Give user XP
-    if (user) {
+    if (user) {        
         let currentXp = levels.currentXp;
 
         currentXp += AddXP(msg, user.userType)
@@ -83,10 +80,11 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
 
     let currentLevel: number;
     let LevelUpXp = 0;
-    for (var i = 2; i < levels.level + 2; i++) {
+    for (let i = 2; i < levels.level + 2; i++) {
         LevelUpXp += GetGlobalXP(i);
     }
 
+    // Level up
     if (levels.currentXp >= LevelUpXp) {
         currentLevel = levels.level + 1;
         await prisma.leveling.update({
@@ -99,24 +97,4 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
         });
         msg.channel.send({ content: `You just leveled up to ${currentLevel}!` });
     }
-
-    // let currentLevel: number;
-    // let LevelUpXP = GetGlobalXP(levels.level+1);
-    // for (let i = 1; i < levels.level; i++) {
-    //     LevelUpXP += GetGlobalXP(i);
-    // }
-
-    // if(levels.currentXp >= LevelUpXP) {
-    //     currentLevel = levels.level += 1;
-    //     await prisma.leveling.update({
-    //         where: {
-    //             userId: msg.author.id
-    //         },
-    //         data: {
-    //             level: currentLevel
-    //         }
-    //     });
-    //     msg.channel.send({ content: `You just leveled up to ${currentLevel}!` });
-    // }
-
 }

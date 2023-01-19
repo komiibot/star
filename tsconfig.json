@@ -10,7 +10,13 @@
     "incremental": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "baseUrl": "src",
+    "paths": {
+      "#modules/*": ["modules/*"],
+      "#utils/*": ["utils/*"]
+    },
   },
     "include": ["src/**/*"],
     "exclude": ["node_modules"]

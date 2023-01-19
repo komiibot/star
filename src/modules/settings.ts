@@ -1,7 +1,7 @@
 import { Users } from "@prisma/client";
 import { Guild, GuildMember } from "discord.js";
 import { prisma } from "../index";
-import { prisma as Logger } from "./logger";
+import { prisma as Logger } from "#utils/logger";
 
 export async function createGuild(guild: Guild): Promise<unknown> {
     const has = await prisma.guild.findFirst({

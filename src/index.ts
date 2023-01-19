@@ -1,11 +1,25 @@
-import { Client, GatewayIntentBits, ThreadChannel } from "discord.js";
-import { DefaultLogging, Dependencies, Sern, single, Singleton } from "@sern/handler"
+import { container, SapphireClient } from '@sapphire/framework';
+import { GatewayIntentBits } from "discord.js";
 import { PrismaClient } from "@prisma/client";
+import { log, prisma as prismaLog } from "#utils/logger";
 import dotenv from "dotenv";
-import chalk from "chalk";
 dotenv.config();
 
-const client = new Client({
+export const prisma = new PrismaClient();
+
+container.prisma = prisma;
+container.log = log;
+container.prismaLog = prismaLog;
+
+declare module '@sapphire/pieces' {
+	interface Container {
+		prisma: typeof prisma;
+		log: typeof log;
+		prismaLog: typeof prismaLog;
+	}
+}
+
+const client = new SapphireClient({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMembers,
@@ -14,38 +28,12 @@ const client = new Client({
 	],
 });
 
-export const prisma = new PrismaClient();
-
-interface MyDependencies extends Dependencies {
-	"@sern/client": Singleton<Client>;
-	"@sern/logger": Singleton<DefaultLogging>
-}
-
-export const useContainer = Sern.makeDependencies<MyDependencies>({
-	build: root => root
-		.add({ "@sern/client": single(client) })
-		.add({ "@sern/logger": single(new DefaultLogging()) })
+process.on("unhandledRejection", (reason, p) => {
+	log("error", "Error", `Unhandled Rejection at: Promise ${p}\nReason:${reason}`);
 });
-
-Sern.init({
-	defaultPrefix: process.env.PREFIX as string,
-	commands: "build/commands",
-	events: "build/events",
-	containerConfig: {
-		get: useContainer
-	}
+  
+process.on("uncaughtException", err => {
+	log("error", "Error", `Unhandled Exception: ${err}`);
 });
-
-const logo = ` ███▄    █ ▓█████  ██ ▄█▀ ▒█████   ███▄ ▄███▓ ██▓
-██ ▀█   █ ▓█   ▀  ██▄█▒ ▒██▒  ██▒▓██▒▀█▀ ██▒▓██▒
-▓██  ▀█ ██▒▒███   ▓███▄░ ▒██░  ██▒▓██    ▓██░▒██▒
-▓██▒  ▐▌██▒▒▓█  ▄ ▓██ █▄ ▒██   ██░▒██    ▒██ ░██░
-▒██░   ▓██░░▒████▒▒██▒ █▄░ ████▓▒░▒██▒   ░██▒░██░
-░ ▒░   ▒ ▒ ░░ ▒░ ░▒ ▒▒ ▓▒░ ▒░▒░▒░ ░ ▒░   ░  ░░▓  
-░ ░░   ░ ▒░ ░ ░  ░░ ░▒ ▒░  ░ ▒ ▒░ ░  ░      ░ ▒ ░
-  ░   ░ ░    ░   ░ ░░ ░ ░ ░ ░ ▒  ░      ░    ▒ ░
-		░    ░  ░░  ░       ░ ░         ░    ░  
-												`
-console.log(chalk.magenta(logo));
 
 client.login(process.env.TOKEN);

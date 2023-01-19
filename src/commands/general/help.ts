@@ -1,45 +1,66 @@
-import { commandModule, CommandType } from '@sern/handler';
-import { publish } from '../../plugins/publish'
-import { EmbedBuilder } from 'discord.js';
-import { useContainer } from '../..';
-import { ok } from 'assert';
+import { ChatInputCommand, Command } from '@sapphire/framework';
+import { isMessageInstance } from '@sapphire/discord.js-utilities';
+import { Message, EmbedBuilder, ApplicationCommandManager, ActionRowBuilder, Events, StringSelectMenuBuilder, ActionRow } from 'discord.js';
 
+export class HelpCommand extends Command {
+    public override registerApplicationCommands(registry: ChatInputCommand.Registry) {
+        registry.registerChatInputCommand((builder) =>
+            builder.setName('help')
+            .setDescription('Generate a list of commands')
+            .addStringOption((option) =>
+                option.setName("command")
+                .setDescription("The command that you want to see more info on.")
+            )
+            .addStringOption((option) =>
+                option.setName("module")
+                .setDescription("The moudle that you want to see more info on.")
+                // .setAutocomplete(true)
+                .setChoices(...[
+                    { name: "ping", value: "ping" }
+                ])
+            )
+        );
+    }
 
-export default commandModule({
-	type: CommandType.Both,
-	plugins: [publish()],
-	description: 'Shows you this menu.',
-	alias : [],
-	execute: async (ctx) => {
-        const [commands] = useContainer('@sern/store')
-
-        const embed = new EmbedBuilder()
-            .setTitle('Help Menu')
-            // TODO: create a function to get current guild prefix.
-            .setDescription(`Here are all the commands you can use, prefix is ?`)
-            .setColor('Random')
+    public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+        let categories = this.container.stores.get("commands").categories;
+        let str = '**Modules**\n';
+        categories.reverse().map(c => str += `\`${c}\`, `);
+        str = str.substring(0, str.length - 2);
+        let embed = new EmbedBuilder()
+            .setTitle('Help')
+            .setDescription(str)
             .setTimestamp()
-            .setFooter({ text: ctx.user.username, iconURL: ctx.user.avatarURL() || undefined })
-            
-        for(const [name, command] of commands.BothCommands) {
-            ok(CommandType.Both === command.type, 'Error: Found invalid command');
+            .setColor('#89CFF0')
+            .setFooter({
+                text: 'test',
+                iconURL: interaction.user.avatarURL()
+        });
 
-            let desc = command.description ?? 'No description';
-            let nameTitle = name ?? 'No name';
+        // Get more info on a command or module
+        const getCommand = interaction.options.getString("command", false);
+        const getModule = interaction.options.getString("module", false);
 
-            const options = command.options ?? [];
-            if (options.length > 0) {
-                for (const option of options) {
-                    nameTitle += ` [${option.name}]`;
-                }
-            } 
-
-            const alias = command.alias?.join(', ') ?? []; 
-            if (alias.length > 0) desc += `\nAliases: ${alias}`;
-
-            embed.addFields({ name: nameTitle, value: desc})
+        if(getCommand) {
+            console.log(getCommand);
         }
 
-        ctx.channel!.send({ embeds: [embed]})
-    },
-});
+        // Row Builder
+        let options = [];
+        for (var i = 0; i < categories.length; i++) {
+            options.push({
+                label: categories[i].charAt(0).toUpperCase() + categories[i].slice(1),
+                value: categories[i]
+            })
+        }
+
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId('select')
+            .setPlaceholder('Nothing selected')
+            .addOptions(options)
+
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)
+
+        await interaction.reply({ embeds: [embed], components: [row] });
+    }
+}

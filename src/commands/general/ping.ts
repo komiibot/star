@@ -1,12 +1,22 @@
-import { commandModule, CommandType } from "@sern/handler";
-import { publish } from "../../plugins/publish";
+import { ChatInputCommand, Command } from '@sapphire/framework';
+import { isMessageInstance } from '@sapphire/discord.js-utilities';
 
-export default commandModule({
-    type: CommandType.Both,
-    plugins: [publish()],
-    description: "A ping command",
-    alias : ["pong"],
-    execute: async (ctx, args) => {
-        await ctx.reply({ content: "Pong!" });
-    },
-});
+export class PingCommand extends Command {
+    public override registerApplicationCommands(registry: ChatInputCommand.Registry) {
+        registry.registerChatInputCommand((builder) =>
+          builder.setName('ping').setDescription('Ping bot to see if it is alive')
+        );
+      }
+    
+      public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+        const msg = await interaction.reply({ content: `Pinging...`, ephemeral: true, fetchReply: true });
+    
+        if (isMessageInstance(msg)) {
+          const diff = msg.createdTimestamp - interaction.createdTimestamp;
+          const ping = Math.round(this.container.client.ws.ping);
+          return interaction.editReply(`Pong!\nBOT: ${ping}ms. \nWS: ${diff}ms.`);
+        }
+    
+        return interaction.editReply('Something went wrong when trying to recieve the ping.');
+    }
+}
