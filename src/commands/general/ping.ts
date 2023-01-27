@@ -1,5 +1,10 @@
 import { ChatInputCommand, Command } from '@sapphire/framework';
 import { isMessageInstance } from '@sapphire/discord.js-utilities';
+import { ApplyOptions } from '@sapphire/decorators';
+
+@ApplyOptions<Command.Options>({
+	preconditions: ["blacklistCheck"]
+})
 
 export class PingCommand extends Command {
     public override registerApplicationCommands(registry: ChatInputCommand.Registry) {

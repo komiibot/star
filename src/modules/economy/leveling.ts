@@ -1,11 +1,11 @@
 import { Leveling, Users } from "@prisma/client";
-import { Message } from "discord.js";
-import { prisma } from "../index";
+import { GuildMember, Message, User } from "discord.js";
+import { prisma } from "../../index";
 import { log } from "#utils/logger";
+import LevelingType from "#types/leveling.type";
 
 const ratelimit = 60000;
 const cooldown = new Map();
-
 
 export function GetGlobalXP(lvl: number): number {
     return Math.trunc((lvl - 1 + 2 * 300 * Math.pow(2, (lvl - 1) / 7)) / 4);
@@ -15,14 +15,26 @@ export function GetGlobalPrestigeXP(lvl: number, prestige: number): number {
     return Math.trunc((lvl - 1 + 300 * Math.pow(2, (lvl - 1) / prestige)) / 4);
 }
 
+async function GetUser(user: string) {
+    try {
+        return await prisma.leveling.findUnique({
+            where: {
+                userId: user
+            }
+        }) as Leveling;
+    } catch (err: any) {
+        return log("error", "Leveling.GetUser()", `Something went wrong when trying to recieve user data.\n ${err.stack}`, { client: this.container.client });
+    }
+}
+
 function between(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-export function AddXP(msg: Message, userType: string) {
+export function AddXP(msg: Message, min?: number, max?: number): number {
     let random = between(20, 40);
-    if (userType === "STAFF" || userType === "DEV") random = between(40, 180);
-    return Math.trunc(random + 1 + (0.1 * msg.content.length))
+    if(min && max) random = between(min, max);
+    return Math.trunc(random + 1 + (0.1 * msg.content.length));
 }
 
 export async function GetUserXP(user: string) {
@@ -31,13 +43,16 @@ export async function GetUserXP(user: string) {
             where: {
                 userId: user
             }
-        });
+        }) as Leveling;
     } catch (err: any) {
-        return log("error", "Leveling.GetUserXP", `Something went wrong when trying to recieve user data.\n ${err.stack}`);
+        return log("error", "Leveling.GetUserXP", `Something went wrong when trying to recieve user data.\n ${err.stack}`, { client: this.container.client });
     }
 }
 
 export async function levelHandler(msg: Message, levels: Leveling, user: Users): Promise<void> {
+    GetUser("123").then((x: LevelingType) => {
+        console.log("lol", x.currentXp);
+    });
     // Cooldowns
     if (!cooldown.has(msg.author.id)) {
         cooldown.set(msg.author.id, 0);
@@ -58,7 +73,7 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
     if (user) {        
         let currentXp = levels.currentXp;
 
-        currentXp += AddXP(msg, user.userType)
+        currentXp += AddXP(msg)
         await prisma.leveling.update({
             where: {
                 userId: msg.author.id
@@ -73,7 +88,7 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
                 userId: msg.author.id
             },
             data: {
-                currentXp: AddXP(msg, user.userType)
+                currentXp: AddXP(msg)
             }
         });
     }

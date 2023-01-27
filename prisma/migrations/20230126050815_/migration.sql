@@ -5,7 +5,7 @@ CREATE TYPE "GuildType" AS ENUM ('NORMAL', 'PREMIUM');
 CREATE TYPE "UserType" AS ENUM ('NORMAL', 'PREMIUM', 'STAFF', 'DEV');
 
 -- CreateEnum
-CREATE TYPE "ItemType" AS ENUM ('CARD', 'TOOL', 'COLLECTABLE', 'PACK');
+CREATE TYPE "ItemType" AS ENUM ('CARD', 'ITEM', 'TOOL', 'COLLECTABLE', 'PACK');
 
 -- CreateEnum
 CREATE TYPE "Powers" AS ENUM ('FIRE', 'WATER', 'EARTH', 'WIND');
@@ -47,6 +47,14 @@ CREATE TABLE "Users" (
 );
 
 -- CreateTable
+CREATE TABLE "UserSettings" (
+    "canDm" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("userId")
+);
+
+-- CreateTable
 CREATE TABLE "Leveling" (
     "currentXp" INTEGER NOT NULL DEFAULT 0,
     "level" INTEGER NOT NULL DEFAULT 1,
@@ -65,9 +73,13 @@ CREATE TABLE "Inventory" (
 
 -- CreateTable
 CREATE TABLE "Economy" (
-    "cash" INTEGER NOT NULL DEFAULT 200,
-    "bank" INTEGER NOT NULL DEFAULT 0,
-    "networth" INTEGER NOT NULL DEFAULT 200,
+    "cash" INTEGER NOT NULL DEFAULT 0,
+    "bank" INTEGER NOT NULL DEFAULT 5000,
+    "bankStorage" INTEGER NOT NULL DEFAULT 100,
+    "networth" INTEGER NOT NULL DEFAULT 0,
+    "streak" INTEGER NOT NULL,
+    "lastDaily" TIMESTAMP(3),
+    "locked" BOOLEAN NOT NULL DEFAULT false,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Economy_pkey" PRIMARY KEY ("userId")
@@ -76,15 +88,21 @@ CREATE TABLE "Economy" (
 -- CreateTable
 CREATE TABLE "Item" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL DEFAULT '',
-    "description" TEXT NOT NULL DEFAULT '',
+    "name" TEXT NOT NULL,
+    "emoji" TEXT NOT NULL,
+    "description" TEXT,
+    "aliases" TEXT[],
+    "shortDescription" TEXT,
+    "stackable" BOOLEAN,
+    "maxQuanity" INTEGER,
     "limited" BOOLEAN NOT NULL DEFAULT false,
     "rarity" INTEGER NOT NULL DEFAULT 0,
     "durability" INTEGER NOT NULL DEFAULT 100,
     "type" "ItemType" NOT NULL,
-    "price" INTEGER,
+    "price" INTEGER NOT NULL,
     "sellPrice" INTEGER,
-    "lootBox" BOOLEAN NOT NULL DEFAULT false,
+    "lootBox" BOOLEAN NOT NULL,
+    "crafting" JSONB,
     "inventoryUserId" TEXT,
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
@@ -104,6 +122,9 @@ ALTER TABLE "GuildUsers" ADD CONSTRAINT "GuildUsers_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "Settings" ADD CONSTRAINT "Settings_guildId_fkey" FOREIGN KEY ("guildId") REFERENCES "Guild"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Leveling" ADD CONSTRAINT "Leveling_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

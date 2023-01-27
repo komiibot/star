@@ -1,6 +1,6 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Events, Listener, ListenerOptions } from "@sapphire/framework";
-import { BaseInteraction, ChannelType, Interaction, Message, MessageComponent, MessageComponentInteraction } from "discord.js";
+import { BaseInteraction, ChannelType, GuildMember, Interaction, Message, MessageComponent, MessageComponentInteraction } from "discord.js";
 
 @ApplyOptions<ListenerOptions>({ event: Events.InteractionCreate })
 export default class InteractionListener extends Listener<typeof Events.InteractionCreate>

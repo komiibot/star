@@ -1,6 +1,11 @@
 import { ChatInputCommand, Command } from '@sapphire/framework';
 import { isMessageInstance } from '@sapphire/discord.js-utilities';
-import { Message, EmbedBuilder, ApplicationCommandManager, ActionRowBuilder, Events, StringSelectMenuBuilder, ActionRow } from 'discord.js';
+import { Message, EmbedBuilder, ApplicationCommandManager, ActionRowBuilder, Events, StringSelectMenuBuilder, ActionRow, ApplicationCommandType } from 'discord.js';
+import { ApplyOptions } from '@sapphire/decorators';
+
+@ApplyOptions<Command.Options>({
+	preconditions: ["blacklistCheck"]
+})
 
 export class HelpCommand extends Command {
     public override registerApplicationCommands(registry: ChatInputCommand.Registry) {
@@ -10,20 +15,19 @@ export class HelpCommand extends Command {
             .addStringOption((option) =>
                 option.setName("command")
                 .setDescription("The command that you want to see more info on.")
+                .setChoices(
+                    { name: "ping", value: "ping" }
+                )
             )
             .addStringOption((option) =>
                 option.setName("module")
                 .setDescription("The moudle that you want to see more info on.")
-                // .setAutocomplete(true)
-                .setChoices(...[
-                    { name: "ping", value: "ping" }
-                ])
             )
         );
     }
 
     public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-        let categories = this.container.stores.get("commands").categories;
+        let categories = this.container.stores.get("commands").categories.filter(c => c !== "dev");
         let str = '**Modules**\n';
         categories.reverse().map(c => str += `\`${c}\`, `);
         str = str.substring(0, str.length - 2);
@@ -42,7 +46,18 @@ export class HelpCommand extends Command {
         const getModule = interaction.options.getString("module", false);
 
         if(getCommand) {
-            console.log(getCommand);
+            let command = this.container.stores.get("commands").get(getCommand)
+            let embed = new EmbedBuilder()
+            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+            .setTitle(command.name)
+            .setDescription(`${command.aliases.length >= 1 ? command.aliases : "There's no available aliases."}\n\nDescription: ${command.description}`)
+            .setTimestamp()
+            .setColor('#d9576c')
+            .setFooter({
+                text: 'Optional params showed in []'
+            });
+            console.log(command)
+            return await interaction.reply({ embeds: [embed] });
         }
 
         // Row Builder

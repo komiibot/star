@@ -69,6 +69,11 @@ export async function createUser(user: GuildMember): Promise<unknown> {
             userId: user.id
         }
     });
+    await prisma.inventory.create({
+        data: {
+            userId: user.id
+        }
+    });
 }
 
 export async function findUser(user: GuildMember): Promise<unknown> {
@@ -80,7 +85,7 @@ export async function findUser(user: GuildMember): Promise<unknown> {
 
     if (!mem) return createUser(user);
 
-    return mem;
+    return mem as Users;
 }
 
 export async function getSettings(guild: Guild): Promise<unknown> {

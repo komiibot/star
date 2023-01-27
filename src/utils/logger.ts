@@ -1,15 +1,18 @@
+import { SapphireClient } from "@sapphire/framework";
 import colors from "chalk";
 import dayjs from "dayjs";
+import { EmbedBuilder } from "discord.js";
 
 interface Options {
   timestamp?: boolean;
+  client?: SapphireClient
 }
 
 export async function log(
   level: string,
   title: string,
   msg: string,
-  options?: Options
+  options?: Options,
 ) {
   let timestamp;
 
@@ -28,6 +31,16 @@ export async function log(
   if (options?.timestamp) {
     timestamp = dayjs(Date.now()).format("HH:mm:ss");
   }
+
+  if(options?.client) {
+    const embed = new EmbedBuilder()
+    .setTitle('Komi Error')
+    .setDescription(`Something went wrong\n\n${msg}`)
+    .setTimestamp()
+    .setColor('#d9576c'); 
+    (await options.client.fetchWebhook("1067673952996040704", process.env.WEBHOOK_TOKEN as string)).send({ embeds: [embed] })
+  }
+
 
   switch (level) {
     case "info": {
@@ -49,6 +62,12 @@ export async function log(
       break;
     }
     case "debug": {
+      console.log(
+        colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
+      );
+      break;
+    }
+    case "cron": {
       console.log(
         colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
       );
