@@ -2,13 +2,17 @@ import { ItemsInterface } from "#types/economy.type";
 import { prisma } from "../../index";
 import { GuildMember } from "discord.js";
 import fs from "fs";
-import { findUser } from "..";
+import path from "path";
 
 let items: ItemsInterface;
 
+const isWin = process.platform === "win32";
+
+let dir = `${__dirname + "../../../data.items.json"}`;
+
 export function getItems() {
     if (!items) {
-        return JSON.parse(fs.readFileSync(__dirname + "../../../data/items.json", "utf-8"));
+        return JSON.parse(fs.readFileSync(isWin ? dir : `${path.join(__dirname, "../../data/items.json")}`, "utf-8"));
     }
 
     return items;

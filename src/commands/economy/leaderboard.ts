@@ -94,7 +94,7 @@ export class TopCommand extends Subcommand {
         userPosition ??= index + 1;
       }
 
-      return `${this.getMedal(index + 1)} \`${total.toLocaleString()}\` • ${member.username}`
+      return `${this.getMedal(index + 1)} \`${total.toLocaleString()}\` • ${member.username}`;
     })
 
     await Promise.all(result).then((value) => {

@@ -17,6 +17,6 @@ export class UserListener extends Listener<typeof Events.ClientReady> {
     this.container.log("prisma", "Events.Ready", `Successfully loaded ${this.container.stores.get("commands").size} commands!`);
     this.container.log("prisma", "Events.Ready", `Serving ${guilds} harem${guilds > 1 ? "s" : ""}!`);
 
-    // await syncItems();
+    await syncItems();
   }
 }

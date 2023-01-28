@@ -12,6 +12,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "baseUrl": "src",
     "paths": {
       "#types/*": ["@types/*"],
@@ -19,6 +20,6 @@
       "#utils/*": ["utils/*"]
     },
   },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/data/*.json"],
     "exclude": ["node_modules"]
 }
