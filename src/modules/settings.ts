@@ -1,5 +1,5 @@
 import { Users } from "@prisma/client";
-import { Guild, GuildMember } from "discord.js";
+import { APIInteractionGuildMember, Guild, GuildMember } from "discord.js";
 import { prisma } from "../index";
 import { prisma as Logger } from "#utils/logger";
 
@@ -49,37 +49,32 @@ export async function findGuild(guild: Guild): Promise<unknown> {
     return g;
 }
 
-export async function createUser(user: GuildMember): Promise<unknown> {
+export async function createUser(user: GuildMember | APIInteractionGuildMember): Promise<unknown> {
     const has = await prisma.users.findFirst({
         where: {
-            id: user.id
+            id: user.user.id
         }
     });
 
     if (has) return;
 
-    Logger("prisma:createUser", `Creating new user with ID: ${user.id}`);
+    Logger("prisma:createUser", `Creating new user with ID: ${user.user.id}`);
     await prisma.users.create({
         data: {
-            id: user.id
+            id: user.user.id
         }
     })
     await prisma.leveling.create({
         data: {
-            userId: user.id
-        }
-    });
-    await prisma.inventory.create({
-        data: {
-            userId: user.id
+            userId: user.user.id
         }
     });
 }
 
-export async function findUser(user: GuildMember): Promise<unknown> {
+export async function findUser(user: GuildMember | APIInteractionGuildMember): Promise<unknown> {
     const mem = await prisma.users.findFirst({
         where: {
-            id: user.id
+            id: user.user.id
         }
     }) as Users;
 

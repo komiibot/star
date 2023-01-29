@@ -3,13 +3,14 @@ import { isMessageInstance } from '@sapphire/discord.js-utilities';
 import { ApplyOptions } from '@sapphire/decorators';
 
 @ApplyOptions<Command.Options>({
-	preconditions: ["blacklistCheck"]
+	preconditions: ["blacklistCheck"],
+  description: "ping the bot to see if it is alive."
 })
 
 export class PingCommand extends Command {
     public override registerApplicationCommands(registry: ChatInputCommand.Registry) {
         registry.registerChatInputCommand((builder) =>
-          builder.setName('ping').setDescription('Ping bot to see if it is alive')
+          builder.setName('ping').setDescription('Ping the bot to see if it is alive.')
         );
       }
     

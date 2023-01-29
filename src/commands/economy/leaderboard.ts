@@ -94,11 +94,12 @@ export class TopCommand extends Subcommand {
         userPosition ??= index + 1;
       }
 
-      return `${this.getMedal(index + 1)} \`${total.toLocaleString()}\` • ${member.username}`;
+      return `${this.getMedal(index + 1)} \`${total.toLocaleString()}\` • ${member?.tag ?? "*Unable to fetch username*"}`;
     })
 
     await Promise.all(result).then((value) => {
       embed.setDescription(value.join("\n"))
+      embed.setFooter({ text: "Currently only shows top 20" })
     })
 
     await new Promise((resolve) => {

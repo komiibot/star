@@ -5,6 +5,7 @@ import { log, prisma as prismaLog } from "#utils/logger";
 import * as utils from "#utils/index";
 import * as settings from "#modules/settings";
 import * as leveling from "#modules/economy/leveling";
+import * as modules from "#modules/index";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -14,6 +15,7 @@ container.prisma = prisma;
 container.log = log;
 container.prismaLog = prismaLog;
 container.utils = utils;
+container.modules = modules;
 container.settings = settings;
 container.leveling = leveling;
 
@@ -23,6 +25,7 @@ declare module '@sapphire/pieces' {
 		log: typeof log;
 		prismaLog: typeof prismaLog;
 		utils: typeof utils;
+		modules: typeof modules;
 		settings: typeof settings;
 		leveling: typeof leveling;
 	}
@@ -42,12 +45,15 @@ const client = new SapphireClient({
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
 	],
+	presence: {
+		status: "dnd",
+	},
 	loadMessageCommandListeners: true,
 	defaultPrefix: "k?"
 });
 
 process.on("unhandledRejection", (err: any) => {
-	log("error", "Error", `Unhandled Rejection: ${err.stack}`);
+	log("error", "Error", `Unhandled Rejection: ${err.stack}`, { timestamp: true, client: client });
 });
 
 process.on("uncaughtException", err => {

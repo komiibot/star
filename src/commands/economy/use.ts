@@ -26,21 +26,27 @@ export class PollCommand extends Command {
 
         const getItem = interaction.options.getString("item", false);
 
-        const user = await this.container.prisma.inventory.findUnique({
+        const user = await this.container.prisma.inventory.findFirst({
             where: {
                 userId: interaction.user.id
             },
         });
 
-        switch(getItem) {
-            case "bronze_crate": {
-                const items = this.container.utils.percentageChance(["padlock", "mask", "hammer", "pickaxe"], [5, 2, 80, 80])
-                return await interaction.editReply({ embeds: [new CustomEmbed().setColor().setDescription(`${items}`)] });
+        try {
+            switch(getItem) {
+                case "bronze_crate": {
+                    const items = this.container.utils.percentageChance(["padlock", "mask", "hammer", "pickaxe"], [5, 2, 80, 80])
+                    return await interaction.editReply({ embeds: [new CustomEmbed().setColor().setDescription(`${items}`)] });
+                }
             }
-        }
-
-        if(!user.items.includes(getItem)) {
-            await interaction.editReply({ embeds: [new CustomEmbed(true, "You don't own that item.")] });
+    
+            if(!user.item.includes(getItem)) {
+                await interaction.editReply({ embeds: [new CustomEmbed(true, "You don't own that item.")] });
+            }
+            
+        } catch(e) {
+            await this.container.log("error", "commands.economy", `Something went wrong with command use: ${e.stack}`, { timestamp: true, client: this.container.client })
+            await interaction.editReply({ embeds: [new CustomEmbed(true, "Something went wrong trying to run that command, this has been logged to our developers.")] });
         }
     }
 }

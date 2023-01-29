@@ -17,3 +17,7 @@ export const arrayShuffle = function(array: string[]) {
 
     return `${values[arrayShuffle(pool)["0"]]} ${values[arrayShuffle(pool)["1"]]} ${values[arrayShuffle(pool)["2"]]}`;
  };
+
+ export function genMinMax(min: number, max: number): number {
+   return Math.floor(Math.random() * (max - min + 1)) + min;
+}

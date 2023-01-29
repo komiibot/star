@@ -71,11 +71,16 @@ model Leveling {
 }
 
 model Inventory {
-    items  String[]
+    item String
+    
+    amount Int @default(1)
+    durability       Int      @default(100)
+
     userId String
     user   Users  @relation(fields: [userId], references: [id])
 
-    @@id([userId])
+    @@unique([userId, item])
+    @@index([userId, item])
 }
 
 model Economy {
@@ -104,7 +109,6 @@ model Item {
     maxQuanity       Int?
     limited          Boolean  @default(false)
     rarity           Int      @default(0)
-    durability       Int      @default(100)
     type             ItemType
 
     price     Int

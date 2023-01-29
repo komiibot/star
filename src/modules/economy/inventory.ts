@@ -3,6 +3,8 @@ import { prisma } from "../../index";
 import { GuildMember } from "discord.js";
 import fs from "fs";
 import path from "path";
+import { findUser } from "#modules/settings";
+import { log } from "#utils/logger";
 
 let items: ItemsInterface;
 
@@ -26,25 +28,54 @@ export async function syncItems(): Promise<any> {
     });
 }
 
-// export async function addItemToInventory(member: GuildMember, itemId: string, amount?: number) {
-//     await findUser(member);
+export async function addItemToInventory(member: GuildMember, itemId: string, amount?: number) {
+    await findUser(member);
 
-//     return await prisma.inventory.update({
-//         where: {
-//             userId: member.id
-//         },
-//         data: {
-//             items: {
-//                 connect: [
-//                     {
-//                         id: itemId
-//                     }
-//                 ]
-//             }
-//         },
-//         // select: {
-//         //     userId: true,
-//         //     items: true
-//         // }
-//     })
-// }
+    if(getItems().filter(x => x.id === itemId).length === 0) {
+        console.trace();
+        return log("error", "modules.economy.inventory.addItemToInventory()", `An invalid item ${itemId} was almost given to: ${member.user.tag}`);
+    }
+
+    await prisma.inventory.create({
+        data: {
+            item: itemId,
+            amount: amount ?? 1,
+            user: {
+                connect: {
+                    id: member.id
+                }
+            }
+        },
+        select: {
+            userId: true,
+            item: true,
+            amount: true,
+            durability: true,
+            user: true
+        }
+    })
+}
+
+export async function setItemAmount(member: GuildMember, itemId: string, amount: number) {
+    await findUser(member);
+
+    if(getItems().filter(x => x.id === itemId).length === 0) {
+        console.trace();
+        return log("error", "modules.economy.inventory.setItemAmount()", `An invalid item ${itemId} was almost given to: ${member.user.tag}`);
+    }
+
+    if(!amount || amount <= 1) {
+        console.trace();
+        return log("error", "modules.economy.inventory.setItemAmount()", `Invalid item amount was almost given to: ${member.user.tag}`);
+    }
+
+    await prisma.inventory.update({
+        where: {
+            userId_item: { userId: member.id, item: itemId }
+        },
+        data: {
+            item: itemId,
+            amount: amount ?? 1,
+        }
+    })
+}

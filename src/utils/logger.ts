@@ -35,7 +35,7 @@ export async function log(
   if(options?.client) {
     const embed = new EmbedBuilder()
     .setTitle('Komi Error')
-    .setDescription(`Something went wrong\n\n${msg}`)
+    .setDescription(`${msg}`)
     .setTimestamp()
     .setColor('#d9576c'); 
     (await options.client.fetchWebhook("1067673952996040704", process.env.WEBHOOK_TOKEN as string)).send({ embeds: [embed] })

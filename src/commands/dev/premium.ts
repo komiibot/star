@@ -1,11 +1,13 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { ChatInputCommand, Command } from '@sapphire/framework';
 import { ApplicationCommandType, Guild, GuildMember } from 'discord.js';
+import { v4 as uuidv4 } from 'uuid';
 
 @ApplyOptions<Command.Options>({
 	preconditions: ["developerOnly", "blacklistCheck"]
 })
 
+// TODO: add sub commands add, remove, generate (type: guild, user)
 export class PremiumCommand extends Command {
   public override registerApplicationCommands(registry: ChatInputCommand.Registry) {
   registry.registerChatInputCommand(

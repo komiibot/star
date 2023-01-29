@@ -1,11 +1,11 @@
 import { APIEmbedField, ColorResolvable, EmbedBuilder } from "discord.js";
 
 export class CustomEmbed extends EmbedBuilder {
-    constructor(error?: boolean, text?: string) {
+    constructor(error?: boolean, text?: string, title?: string) {
         super();
 
         if (error) {
-            super.setTitle("<:failed:1067965647335731290>");
+            super.setTitle(`<:failed:1067965647335731290> ${title ? title : ""}`);
             super.setColor("#a8324a");
             super.setDescription(text);
 

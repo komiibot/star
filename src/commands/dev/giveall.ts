@@ -71,7 +71,7 @@ export class BlacklistCommand extends Command {
 
       if (getUser) {
         const user = (await this.container.client.users.fetch(getUser));
-        if (!await this.container.settings.findUser(user as unknown as GuildMember)) return;
+        if (!user) await this.container.settings.findUser(user as unknown as GuildMember);
 
         if(process.env.DEVELOPERS.split(", ").includes(user.id) || user.id === this.container.client.user.id) return interaction.reply({ content: "You can't blacklist that user.", ephemeral: true })
         

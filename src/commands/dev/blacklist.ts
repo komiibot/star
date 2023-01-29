@@ -33,7 +33,6 @@ export class BlacklistCommand extends Command {
       if (getGuild) {
         const guild = (await this.container.client.guilds.fetch(getGuild).catch(() => null))
         if(!guild) return interaction.reply({ content: "Unknown guild", ephemeral: true })
-        if (!await this.container.settings.findGuild(guild as unknown as Guild)) return;
 
         if(guild.id === this.container.utils.GUILD_ID) return interaction.reply({ content: "You can't blacklist that guild.", ephemeral: true })
 

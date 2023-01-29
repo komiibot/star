@@ -58,7 +58,7 @@ export class EvalCommand extends Command {
           .setTitle('Input')
           .setDescription(input)
           .setTimestamp()
-          .setColor('#89CFF0')
+          .setColor('#91e3e2')
           .setFooter({
             text: 'Eval',
             iconURL: msg.member.user.avatarURL()

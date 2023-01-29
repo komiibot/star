@@ -1,5 +1,6 @@
 import { ChatInputCommand, Command } from '@sapphire/framework';
 import { ApplyOptions } from '@sapphire/decorators';
+import { CustomEmbed } from '#utils/embed';
 
 @ApplyOptions<Command.Options>({
 	preconditions: ["blacklistCheck"]
@@ -15,12 +16,18 @@ export class PollCommand extends Command {
       public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
         await interaction.deferReply();
 
-        const user = await this.container.prisma.inventory.findUnique({ 
-            where: {
-                userId: interaction.user.id
-            },
+        const user = await this.container.prisma.inventory.findMany({
+          where: {
+            userId: interaction.user.id
+          }
         });
 
-        await interaction.editReply({ content: `${user.items.length > 1 ? user.items : "You have no items in your inventory."}` })
+        const items = user.map(x => x.item);
+
+        await interaction.editReply({ embeds: 
+          items.length >= 1 
+          ? [new CustomEmbed().setDescription(items.join(", ")).setColor()]
+          : [new CustomEmbed().setDescription("You have no items in your inventory")]
+        });
     }
 }
