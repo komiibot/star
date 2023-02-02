@@ -5,15 +5,10 @@ import { EmbedBuilder } from "discord.js";
 
 interface Options {
   timestamp?: boolean;
-  client?: SapphireClient
+  client?: SapphireClient;
 }
 
-export async function log(
-  level: string,
-  title: string,
-  msg: string,
-  options?: Options,
-) {
+export async function log(level: string, title: string, msg: string, options?: Options) {
   let timestamp;
 
   if (level === undefined) {
@@ -32,51 +27,34 @@ export async function log(
     timestamp = dayjs(Date.now()).format("HH:mm:ss");
   }
 
-  if(options?.client) {
-    const embed = new EmbedBuilder()
-    .setTitle('Komi Error')
-    .setDescription(`${msg}`)
-    .setTimestamp()
-    .setColor('#d9576c'); 
-    (await options.client.fetchWebhook("1067673952996040704", process.env.WEBHOOK_TOKEN as string)).send({ embeds: [embed] })
+  if (options?.client) {
+    const embed = new EmbedBuilder().setTitle("Error").setDescription(`${msg}`).setTimestamp().setColor("#a8324a");
+    (await options.client.fetchWebhook("1067673952996040704", process.env.WEBHOOK_TOKEN as string)).send({ embeds: [embed] });
   }
-
 
   switch (level) {
     case "info": {
-      console.log(
-        colors.green(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.green(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "warn": {
-      console.log(
-        colors.yellow(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.yellow(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "error": {
-      console.log(
-        colors.red(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.red(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "debug": {
-      console.log(
-        colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "cron": {
-      console.log(
-        colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "prisma": {
-      console.log(
-        colors.magenta(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)
-      );
+      console.log(colors.magenta(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
   }

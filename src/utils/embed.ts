@@ -1,54 +1,54 @@
-import { APIEmbedField, ColorResolvable, EmbedBuilder } from "discord.js";
+import { APIEmbedField, ColorResolvable, EmbedAuthorOptions, EmbedBuilder } from "discord.js";
+import { randomColor } from "./random";
 
 export class CustomEmbed extends EmbedBuilder {
-    constructor(error?: boolean, text?: string, title?: string) {
-        super();
+  constructor(error?: boolean, text?: string, title?: string) {
+    super();
 
-        if (error) {
-            super.setTitle(`<:failed:1067965647335731290> ${title ? title : ""}`);
-            super.setColor("#a8324a");
-            super.setDescription(text);
+    if (error) {
+      super.setTitle(`<:failed:1067965647335731290> ${title ? title : ""}`);
+      super.setColor("#a8324a");
+      super.setDescription(text);
 
-            return this;
-        }
+      return this;
     }
+  }
 
-    setTitle(text: string) {
-        super.setTitle(text);
+  setTitle(text: string) {
+    super.setTitle(text);
 
-        return this;
-    }
+    return this;
+  }
 
-    setDescription(text: string): this {
-        if (text.length > 2000) text.substring(0, 2000);
-        super.setDescription(text);
-        
-        return this;
-    }
+  setDescription(text: string): this {
+    if (text.length > 2000) text.substring(0, 2000);
+    super.setDescription(text);
 
-    setColor(color?: ColorResolvable): this {
-        // if(!color) color = "#b09ae3";
-        if(!color) color = "#d5e4eb";
-        super.setColor(color);
+    return this;
+  }
 
-        return this;
-    }
+  setColor(color?: ColorResolvable): this {
+    if (!color) color = "#d5e4eb";
+    super.setColor(color as ColorResolvable);
 
-    setFields(fields: APIEmbedField[]) {
-        if (fields && fields.length > 0) super.addFields(fields);
+    return this;
+  }
 
-        return this;
-    }
+  setFields(fields: APIEmbedField[]) {
+    if (fields && fields.length > 0) super.addFields(fields);
 
-    setImage(url: string) {
-        super.setImage(url);
+    return this;
+  }
 
-        return this;
-    }
+  setImage(url: string) {
+    super.setImage(url);
 
-    setThumbnail(url: string) {
-        super.setThumbnail(url);
+    return this;
+  }
 
-        return this;
-    }
+  setThumbnail(url: string) {
+    super.setThumbnail(url);
+
+    return this;
+  }
 }
