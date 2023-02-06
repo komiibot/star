@@ -43,9 +43,11 @@ export class EvalCommand extends Command {
 
         const cleaned = await clean(evaled);
 
+        if(["TOKEN", "process.env", "token", "process.env.TOKEN", "this.container.client.guilds.forEach", "this.container.client.guilds.map"].some((e) => cleaned.includes(e))) return;
+
         let input = `**Input**\n\`\`\`${(args as any).join(" ")}\`\`\`\n**Output**:\n\`\`\`${cleaned}\`\`\``;
-        let embed = new EmbedBuilder().setTitle("Input").setDescription(input).setTimestamp().setColor("#91e3e2").setFooter({
-          text: "Eval",
+        let embed = new EmbedBuilder().setDescription(input).setTimestamp().setColor("#91e3e2").setFooter({
+          text: msg.member.user.username,
           iconURL: msg.member.user.avatarURL(),
         });
         return msg.channel.send({ embeds: [embed] });

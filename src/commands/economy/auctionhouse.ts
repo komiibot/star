@@ -3,6 +3,7 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { CustomEmbed } from "#utils/embed";
 import { TextChannel } from "discord.js";
+import { ItemsInterface } from "#types/economy.type";
 
 @ApplyOptions<Command.Options>({
   preconditions: ["blacklistCheck"],
@@ -55,15 +56,15 @@ export class AuctionHouseCommand extends Subcommand {
 
     const time = Math.floor(Date.now() / 1000);
 
-    const items = await this.container.modules.getItems();
+    const items = await this.container.modules.inventory.getItems();
 
     const item = interaction.options.getString("item");
     const amount = interaction.options.getNumber("amount");
     let price = interaction.options.getNumber("price");
 
-    const inventory = await this.container.modules.getInventory(interaction?.member);
-    const emoji = items.find((x) => x.id === item).emoji;
-    const itemName = items.find((x) => x.id === item).name;
+    const inventory = await this.container.modules.inventory.getInventory(interaction?.member);
+    const emoji = items.find((x: ItemsInterface) => x.id === item).emoji;
+    const itemName = items.find((x: ItemsInterface) => x.id === item).name;
 
     if (!inventory.length) return interaction.editReply({ embeds: [new CustomEmbed(true, `Something went wrong trying to execute that command.`)] });
 
@@ -78,23 +79,7 @@ export class AuctionHouseCommand extends Subcommand {
 
     if (amount > 2) price = price * amount;
 
-    const hook = await channel.send({
-      embeds: [
-        new this.container.utils.CustomEmbed()
-          .setFooter({ text: "Auction House" })
-          .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
-          .setDescription(`Item listed since: <t:${time}:R>\n\n**${amount}** ${emoji}${itemName}${amount > 1 ? "s" : ""} for **$${this.container.utils.taxItem(price, 4)}**`)
-          .setColor("Random"),
-      ],
-    });
-
-    return interaction.editReply({
-      embeds: [
-        new this.container.utils.CustomEmbed()
-          .setDescription(`Successfully listed your [auction](https://discord.com/channels/1063684563588632577/1070423672227115069/${hook.id}).`)
-          .setColor(),
-      ],
-    });
+    await this.container.modules.auction.postToChannel(interaction, channel, time, emoji, itemName, amount, price);
   }
 
   public async listInput(interaction: Command.ChatInputCommandInteraction) {}

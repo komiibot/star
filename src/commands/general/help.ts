@@ -27,7 +27,7 @@ export class HelpCommand extends Command {
     let embed = new EmbedBuilder()
       .setAuthor({ name: "Help", iconURL: this.container.client.user.displayAvatarURL() })
       .setDescription(
-        "Commands are put into categories named `modules`. Using the selection menu you can get a list of commands under a module. If further assistance is needed feel free to join our [support server](https://discord.gg/komibot)."
+        "Commands are put into categories named **modules**. Using the selection menu you can get a list of commands under a module. If further assistance is needed feel free to join our [support server](https://discord.gg/komibot)."
       )
       .setFields({ name: "Modules", value: str })
       .setTimestamp()

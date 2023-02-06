@@ -1,0 +1,61 @@
+import { Users } from "./user"
+import { AuctionHouse } from "./economy"
+
+model Guild {
+    id          String       @id @unique
+    settings    Settings[]
+    guildType   GuildType    @default(NORMAL)
+    blacklisted Boolean      @default(false)
+    GuildUsers  GuildUsers[]
+}
+
+model GuildUsers {
+    guildId String
+    guild   Guild  @relation(fields: [guildId], references: [id])
+    userId  String
+    user    Users  @relation(fields: [userId], references: [id])
+
+    @@id([guildId, userId])
+}
+
+model EconomyGuild {
+    cash        Int       @default(0)
+    bank        Int       @default(5000)
+    bankStorage Int       @default(100)
+    networth    Int       @default(0)
+    streak      Int
+    lastDaily   DateTime?
+    locked      Boolean   @default(false)
+
+    userId  String
+    guildId String
+
+    AuctionHouse AuctionHouse[]
+
+    @@id([userId, guildId])
+}
+
+
+model GuildLeveling {
+    currentXp Int    @default(0)
+    level     Int    @default(1)
+    prestige  Int    @default(0)
+    userId    String
+    guildId   String
+
+    @@id([userId, guildId])
+}
+
+model Settings {
+    id       String  @id @default(cuid())
+    guildId  String?
+    guild    Guild?  @relation(fields: [guildId], references: [id])
+    prefix   String  @default("k?")
+    leveling Boolean @default(false)
+    ignoredChannels String[]
+}
+
+enum GuildType {
+    NORMAL
+    PREMIUM
+}

@@ -14,10 +14,10 @@ export async function runJobs() {
     await agenda.start();
 
     agenda.on("start", (job) => {
-        logger("cron", "Komi.Jobs", `[${job.attrs.name}] is starting`);
+        logger("info", "Komi.Jobs", `[${job.attrs.name}] is starting`);
     })
     agenda.on("success", (job) => {
-        logger("cron", "Komi.Jobs", `[${job.attrs.name}] was successful`);
+        logger("custom", "Komi.Jobs", `[${job.attrs.name}] was successful`);
     })
     agenda.on("fail", (error, job) => {
         logger("error", "Komi.Jobs", `[${job.attrs.name}] failed: ${error}`);

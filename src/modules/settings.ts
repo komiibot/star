@@ -1,7 +1,7 @@
 import { Users } from "@prisma/client";
 import { APIInteractionGuildMember, Guild, GuildMember } from "discord.js";
 import { prisma } from "../index";
-import { prisma as Logger } from "#utils/logger";
+import { log as Logger } from "#utils/logger";
 
 export async function createGuild(guild: Guild): Promise<unknown> {
   const has = await prisma.guild.findFirst({
@@ -12,7 +12,7 @@ export async function createGuild(guild: Guild): Promise<unknown> {
 
   if (has) return;
 
-  Logger("prisma:createGuild", `Creating new guild with ID: ${guild.id}`);
+  Logger("prisma", "prisma:createGuild", `Creating new guild entry: ${guild.name} ${guild.id} ${(await guild.fetchOwner()).user.tag}`, { timestamp: true });
   await prisma.guild.create({
     data: {
       id: guild.id,
@@ -29,7 +29,7 @@ export async function deleteGuild(guild: Guild): Promise<unknown> {
 
   if (!has) return;
 
-  Logger("prisma:guildDelete", `Deleting entry for guild ID: ${guild.id}`);
+  Logger("prisma", "prisma:guildDelete", `Deleting entry for guild ID: ${guild.id}`, { timestamp: true });
   await prisma.guild.delete({
     where: {
       id: guild.id,
@@ -58,7 +58,7 @@ export async function createUser(user: GuildMember | APIInteractionGuildMember):
 
   if (has) return;
 
-  Logger("prisma:createUser", `Creating new user with ID: ${user.user.id}`);
+  Logger("prisma", "prisma:createUser", `Creating new user entry: ${user.user.username}#${user.user.discriminator} ${user.user.id}`, { timestamp: true });
   await prisma.users.create({
     data: {
       id: user.user.id,
@@ -86,7 +86,7 @@ export async function findUser(user: GuildMember | APIInteractionGuildMember): P
 export async function getSettings(guild: Guild): Promise<unknown> {
   const find = await prisma.settings.findFirst({
     where: {
-      guildId: guild.id,
+      guildId: guild.id as string,
     },
   });
 
@@ -94,6 +94,23 @@ export async function getSettings(guild: Guild): Promise<unknown> {
     await prisma.settings.create({
       data: {
         guildId: guild.id as string,
+      },
+    });
+
+  return find!;
+}
+
+export async function getSettingsById(guild: string): Promise<unknown> {
+  const find = await prisma.settings.findFirst({
+    where: {
+      guildId: guild,
+    },
+  });
+
+  if (!find)
+    await prisma.settings.create({
+      data: {
+        guildId: guild,
       },
     });
 

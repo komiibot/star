@@ -1,0 +1,97 @@
+import { Users } from "./user"
+import { EconomyGuild } from "./guild"
+
+model Leveling {
+    currentXp Int    @default(0)
+    level     Int    @default(1)
+    prestige  Int    @default(0)
+    userId    String
+    user      Users  @relation(fields: [userId], references: [id])
+    channel String
+
+    @@id([userId])
+}
+
+model Inventory {
+    item String
+
+    amount     Int @default(1)
+    durability Int @default(100)
+
+    userId String
+    user   Users  @relation(fields: [userId], references: [id])
+
+    @@unique([userId, item])
+    @@index([userId, item])
+}
+
+model AuctionHouse {
+    id         String    @id @default(cuid())
+    userId     String
+    user       Economy   @relation(fields: [userId], references: [userId])
+    itemId     String
+    itemAmount Int       @default(1)
+    messageId  String    @unique
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime?
+    closed     Boolean   @default(false)
+    sold       Boolean   @default(false)
+
+    auctionChannel      String?
+    EconomyGuild        EconomyGuild? @relation(fields: [economyGuildUserId, economyGuildGuildId], references: [userId, guildId])
+    economyGuildUserId  String?
+    economyGuildGuildId String?
+}
+
+
+
+model Economy {
+    cash        Int       @default(0)
+    bank        Int       @default(5000)
+    bankStorage Int       @default(100)
+    networth    Int       @default(0)
+    streak      Int
+    lastDaily   DateTime?
+    locked      Boolean   @default(false)
+
+    userId       String
+    user         Users          @relation(fields: [userId], references: [id])
+    AuctionHouse AuctionHouse[]
+
+    @@id([userId])
+}
+
+model Item {
+    id               String   @id
+    name             String
+    emoji            String
+    description      String?
+    aliases          String[]
+    shortDescription String?
+    stackable        Boolean?
+    maxQuanity       Int?
+    limited          Boolean  @default(false)
+    rarity           Int      @default(0)
+    type             ItemType
+
+    price     Int
+    sellPrice Int?
+    lootBox   Boolean
+
+    crafting Json?
+}
+
+enum ItemType {
+    CARD
+    ITEM
+    TOOL
+    COLLECTABLE
+    PACK
+}
+
+enum Powers {
+    FIRE
+    WATER
+    EARTH
+    WIND
+}

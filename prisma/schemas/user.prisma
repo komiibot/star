@@ -1,0 +1,33 @@
+import { Economy, Leveling, Inventory } from "./economy"
+import { GuildUsers } from "./guild"
+
+model Users {
+    id           String         @id @unique
+    userType     UserType       @default(NORMAL)
+    leveling     Leveling[]
+    inventory    Inventory[]
+    blacklisted  Boolean        @default(false)
+    GuildUsers   GuildUsers[]
+    Economy      Economy[]
+    UserSettings UserSettings[]
+}
+
+
+
+
+
+model UserSettings {
+    canDm  Boolean @default(false)
+    userId String
+    user   Users   @relation(fields: [userId], references: [id])
+
+    @@id([userId])
+}
+
+enum UserType {
+    NORMAL
+    PREMIUM
+    STAFF
+    DEVELOPER
+    OWNER
+}

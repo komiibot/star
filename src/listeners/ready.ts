@@ -1,7 +1,7 @@
 import { Events, Listener, Logger } from "@sapphire/framework";
 import { ApplyOptions } from "@sapphire/decorators";
 import { IS_PROD } from "#utils/consts";
-import { syncItems } from "#modules/index";
+import { syncItems } from "#modules/economy/inventory";
 
 @ApplyOptions<Listener.Options>({ once: true })
 export class UserListener extends Listener<typeof Events.ClientReady> {
@@ -10,12 +10,14 @@ export class UserListener extends Listener<typeof Events.ClientReady> {
   }
 
   private async printInfo() {
-    const env = IS_PROD === true ? "PRODUCTION" : "DEVELOPMENT";
     const guilds = this.container.client.guilds.cache.size;
+    const color = "#fc03ad";
 
-    this.container.log("prisma", "Events.Ready", `Komi [${env}] Version ${this.container.utils.VERSION}`);
-    this.container.log("prisma", "Events.Ready", `Successfully loaded ${this.container.stores.get("commands").size} commands!`);
-    this.container.log("prisma", "Events.Ready", `Serving ${guilds} harem${guilds > 1 ? "s" : ""}!`);
+    this.container.log("info", "Events.Ready", `Komi${IS_PROD === true ? "" : " [DEV]"} Version ${this.container.utils.VERSION}`, { timestamp: true, color: color });
+    this.container.log("info", "Events.Ready", `Successfully loaded ${this.container.stores.get("commands").size} commands!`, { timestamp: true, color: color });
+    this.container.log("info", "Events.Ready", `Serving ${guilds} harem${guilds > 1 ? "s" : ""}!`, { timestamp: true, color: color });
+    this.container.log("prisma", "[PRISMA]", "Successfully connected to the database.", { timestamp: true });
+    this.container.log("custom", "[REDIS]", "Successfully connected to redis.", { timestamp: true });
 
     await syncItems();
   }

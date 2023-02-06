@@ -2,10 +2,12 @@ import { SapphireClient } from "@sapphire/framework";
 import colors from "chalk";
 import dayjs from "dayjs";
 import { EmbedBuilder } from "discord.js";
+import { CustomEmbed } from "./embed";
 
 interface Options {
   timestamp?: boolean;
   client?: SapphireClient;
+  color?: string;
 }
 
 export async function log(level: string, title: string, msg: string, options?: Options) {
@@ -28,7 +30,8 @@ export async function log(level: string, title: string, msg: string, options?: O
   }
 
   if (options?.client) {
-    const embed = new EmbedBuilder().setTitle("Error").setDescription(`${msg}`).setTimestamp().setColor("#a8324a");
+    // const embed = new EmbedBuilder().setTitle("Error").setDescription(`${msg}`).setTimestamp().setColor("#a8324a");
+    const embed = new CustomEmbed(true, msg, "Error").setTimestamp();
     (await options.client.fetchWebhook("1067673952996040704", process.env.WEBHOOK_TOKEN as string)).send({ embeds: [embed] });
   }
 
@@ -49,12 +52,12 @@ export async function log(level: string, title: string, msg: string, options?: O
       console.log(colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
-    case "cron": {
-      console.log(colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
-      break;
-    }
     case "prisma": {
       console.log(colors.magenta(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
+      break;
+    }
+    case "custom": {
+      console.log(colors.hex(options.color ? options.color : "#FFA500")((`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`)));
       break;
     }
   }

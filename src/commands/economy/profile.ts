@@ -35,12 +35,12 @@ export class ProfileCommand extends Command {
     let badge: string = "";
 
     if (process.env.BOT_OWNER.split(", ").includes(interaction.user.id) && !getUser) {
-      badge = "<:admin:1070578501624803369><:developer:1070578058400104448>";
+      badge = "<:admin:1070787895104905267><:developer:1070786891600900216>";
     }
 
     switch (users.userType) {
       case "DEV": {
-        badge = "<:developer:1070578058400104448>";
+        badge = "<:developer:1070786891600900216> ";
         break;
       }
       case "STAFF": {
@@ -48,7 +48,7 @@ export class ProfileCommand extends Command {
         break;
       }
       case "PREMIUM": {
-        badge = "<:premium:1070578064179875860> ";
+        badge = "<:premium:1070578064179875860>";
         break;
       }
     }

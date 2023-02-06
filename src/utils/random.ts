@@ -8,14 +8,18 @@ export const arrayShuffle = function (array: string[]) {
   return array;
 };
 
-export const percentageChance = function (values: string[], chances: string[] | number[]) {
+export const percentageChance = function (values: string[], chances: string[] | number[], multiple?: boolean) {
   for (var i = 0, pool = []; i < chances.length; i++) {
     for (var i2 = 0; i2 < chances[i]; i2++) {
       pool.push(i);
     }
   }
 
-  return `${values[arrayShuffle(pool)["0"]]} ${values[arrayShuffle(pool)["1"]]} ${values[arrayShuffle(pool)["2"]]}`;
+  if(multiple) {
+    return `${values[arrayShuffle(pool)["0"]]} ${values[arrayShuffle(pool)["1"]]} ${values[arrayShuffle(pool)["2"]]}`;
+  }
+
+  return values[arrayShuffle(pool)["0"]];
 };
 
 export function genMinMax(min: number, max: number): number {

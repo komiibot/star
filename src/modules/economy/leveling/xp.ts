@@ -1,6 +1,6 @@
 import { Leveling, Users } from "@prisma/client";
 import { GuildMember, Message, User } from "discord.js";
-import { prisma } from "../../index";
+import { prisma } from "../../../index";
 import { log } from "#utils/logger";
 import LevelingType from "#types/leveling.type";
 
@@ -8,7 +8,7 @@ const ratelimit = 60000;
 const cooldown = new Map();
 
 export function GetGlobalXP(lvl: number): number {
-  return Math.trunc((lvl - 1 + 2 * 300 * Math.pow(2, (lvl - 1) / 7)) / 4);
+  return Math.trunc((lvl - 1 + 2 * 300 * Math.pow(2, (lvl - 1) / 9)) / 4);
 }
 
 export function GetGlobalPrestigeXP(lvl: number, prestige: number): number {
@@ -32,7 +32,7 @@ function between(min: number, max: number): number {
 }
 
 export function AddXP(msg: Message, min?: number, max?: number): number {
-  let random = between(20, 40);
+  let random = between(10, 30);
   if (min && max) random = between(min, max);
   return Math.trunc(random + 1 + 0.1 * msg.content.length);
 }
@@ -61,7 +61,7 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
   if (cooldown.has(msg.author.id)) {
     let messageCount = cooldown.get(msg.author.id);
     console.log(messageCount);
-    if (messageCount >= 4) return;
+    if (messageCount >= 3) return;
     cooldown.set(msg.author.id, messageCount ? messageCount + 1 : 1);
   }
 
@@ -110,6 +110,6 @@ export async function levelHandler(msg: Message, levels: Leveling, user: Users):
         level: currentLevel,
       },
     });
-    msg.channel.send({ content: `You just leveled up to ${currentLevel}!` });
+    // msg.channel.send({ content: `You just leveled up to ${currentLevel}!` });
   }
 }
