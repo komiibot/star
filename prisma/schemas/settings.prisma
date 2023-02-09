@@ -1,0 +1,19 @@
+import { Guild, Settings } from "./guild"
+
+model EconomySettings {
+    id      String    @id @default(cuid())
+    guildId String
+    guild   Settings? @relation(fields: [guildId], references: [id])
+}
+
+
+model DisabledCommands {
+    id       String   @id @default(cuid())
+    name     String
+    channels String[]
+    guildId  String
+    guild    Guild?   @relation(fields: [guildId], references: [id])
+
+    @@index([name, guildId])
+}
+

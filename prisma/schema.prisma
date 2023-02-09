@@ -117,11 +117,12 @@ enum Powers {
 //
 
 model Guild {
-  id          String       @id @unique
-  settings    Settings[]
-  guildType   GuildType    @default(NORMAL)
-  blacklisted Boolean      @default(false)
-  GuildUsers  GuildUsers[]
+  id               String             @id @unique
+  settings         Settings[]
+  guildType        GuildType          @default(NORMAL)
+  blacklisted      Boolean            @default(false)
+  GuildUsers       GuildUsers[]
+  DisabledCommands DisabledCommands[]
 }
 
 model GuildUsers {
@@ -161,16 +162,38 @@ model GuildLeveling {
 }
 
 model Settings {
-  id       String  @id @default(cuid())
-  guildId  String?
-  guild    Guild?  @relation(fields: [guildId], references: [id])
-  prefix   String  @default("k?")
-  leveling Boolean @default(false)
+  id              String            @id @default(cuid())
+  guildId         String
+  guild           Guild?            @relation(fields: [guildId], references: [id])
+  prefix          String            @default("k?")
+  leveling        Boolean           @default(false)
+  ignoredChannels String[]
+  EconomySettings EconomySettings[]
 }
 
 enum GuildType {
   NORMAL
   PREMIUM
+}
+
+//
+// settings.prisma
+//
+
+model EconomySettings {
+  id      String    @id @default(cuid())
+  guildId String
+  guild   Settings? @relation(fields: [guildId], references: [id])
+}
+
+model DisabledCommands {
+  id       String   @id @default(cuid())
+  name     String
+  channels String[]
+  guildId  String
+  guild    Guild?   @relation(fields: [guildId], references: [id])
+
+  @@index([name, guildId])
 }
 
 //
@@ -200,5 +223,6 @@ enum UserType {
   NORMAL
   PREMIUM
   STAFF
-  DEV
+  DEVELOPER
+  OWNER
 }

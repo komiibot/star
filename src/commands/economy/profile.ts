@@ -39,7 +39,7 @@ export class ProfileCommand extends Command {
     }
 
     switch (users.userType) {
-      case "DEV": {
+      case "DEVELOPER": {
         badge = "<:developer:1070786891600900216> ";
         break;
       }

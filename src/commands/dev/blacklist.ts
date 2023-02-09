@@ -6,7 +6,7 @@ import { ApplicationCommandType, Guild, GuildMember } from "discord.js";
 import { v4 as uuidv4 } from "uuid";
 
 @ApplyOptions<Command.Options>({
-  preconditions: ["developerOnly", "blacklistCheck"],
+  preconditions: ["developerOnly"],
 })
 
 // TODO: add sub commands add, remove, generate (type: guild, user)

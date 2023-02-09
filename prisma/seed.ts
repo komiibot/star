@@ -6,15 +6,15 @@ async function main() {
     data: [
       {
         id: "583925649807245322",
-        userType: "DEV",
+        userType: "DEVELOPER",
       },
       {
         id: "199801459469058048",
-        userType: "DEV",
+        userType: "DEVELOPER",
       },
       {
         id: "1048860807842234469",
-        userType: "DEV"
+        userType: "DEVELOPER"
       }
     ],
     skipDuplicates: true,

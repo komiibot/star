@@ -14,7 +14,7 @@ export class GuildListener extends Listener<typeof Events.GuildDelete> {
     await this.container.log(
       "info",
       "Events.GuildDelete",
-      `Left guild ${guild.name} with ID: ${guild.id}. Owner: ${(await guild.fetchOwner()).user.tag} ID: ${(await guild.fetchOwner()).user.id}`
+      `Left guild ${guild.name} with ID: ${guild.id}.`
     );
 
     (await this.container.client.fetchWebhook("1069260276953796628", process.env.GUILD_WEBHOOK_TOKEN)).send({
@@ -28,7 +28,6 @@ export class GuildListener extends Listener<typeof Events.GuildDelete> {
               ).fromNow()})`
             )
           )
-          .setFooter({ text: `Owner: ${(await guild.fetchOwner()).user.tag}`, iconURL: (await guild.fetchOwner()).avatarURL() })
           .setColor("#a8324a"),
       ],
     });

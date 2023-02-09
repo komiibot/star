@@ -83,18 +83,13 @@ async function logAndWebhook(description: string, embedDescription: string, embe
   return webhook.destroy();
 }
 
-export async function passedCaptcha(member: GuildMember, client: Client) {
-  const webhook = await client.fetchWebhook("1071770552752164904", process.env.WEBHOOK_ANTICHEAT_TOKEN);
-
-  await webhook.send({
-    embeds: [
-      new CustomEmbed()
-        .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
-        .setDescription(`\`${timestamp}\` Captcha was successfully passed.`)
-        .setTimestamp()
-        .setColor("Green"),
-    ],
-  });
+export async function setLocked(member: string, locked: boolean) {
+  const key = `${member}:locked`;
+  if(locked === true) {
+    await redis.set(key, "1")
+  } else {
+    await redis.set(key, "0")
+  }
 }
 
 export async function sendCaptcha(result: Message) {
@@ -161,6 +156,7 @@ export async function sendCaptcha(result: Message) {
   if (failed || !response) return;
 
   if (response.content.toLowerCase() == text) {
+    await setLocked(result.member.id, false);
     await logAndWebhook(
       `${result.member.user.username}#${result.member.user.discriminator} with ID ${result.member.user.id}. User passed captcha`,
       "Captcha passed.",

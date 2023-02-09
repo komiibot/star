@@ -1,12 +1,14 @@
 import { Users } from "./user"
 import { AuctionHouse } from "./economy"
+import  { DisabledCommands, EconomySettings } from "./settings"
 
 model Guild {
-    id          String       @id @unique
-    settings    Settings[]
-    guildType   GuildType    @default(NORMAL)
-    blacklisted Boolean      @default(false)
-    GuildUsers  GuildUsers[]
+    id               String             @id @unique
+    settings         Settings[]
+    guildType        GuildType          @default(NORMAL)
+    blacklisted      Boolean            @default(false)
+    GuildUsers       GuildUsers[]
+    DisabledCommands DisabledCommands[]
 }
 
 model GuildUsers {
@@ -35,7 +37,6 @@ model EconomyGuild {
     @@id([userId, guildId])
 }
 
-
 model GuildLeveling {
     currentXp Int    @default(0)
     level     Int    @default(1)
@@ -47,12 +48,13 @@ model GuildLeveling {
 }
 
 model Settings {
-    id       String  @id @default(cuid())
-    guildId  String?
-    guild    Guild?  @relation(fields: [guildId], references: [id])
-    prefix   String  @default("k?")
-    leveling Boolean @default(false)
+    id              String            @id @default(cuid())
+    guildId         String
+    guild           Guild?            @relation(fields: [guildId], references: [id])
+    prefix          String            @default("k?")
+    leveling        Boolean           @default(false)
     ignoredChannels String[]
+    EconomySettings EconomySettings[]
 }
 
 enum GuildType {

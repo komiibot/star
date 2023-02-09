@@ -1,4 +1,4 @@
-import { Users } from "@prisma/client";
+import { Leveling, Settings, Users } from "@prisma/client";
 import { APIInteractionGuildMember, Guild, GuildMember } from "discord.js";
 import { prisma } from "../index";
 import { log as Logger } from "#utils/logger";
@@ -12,7 +12,7 @@ export async function createGuild(guild: Guild): Promise<unknown> {
 
   if (has) return;
 
-  Logger("prisma", "prisma:createGuild", `Creating new guild entry: ${guild.name} ${guild.id} ${(await guild.fetchOwner()).user.tag}`, { timestamp: true });
+  Logger("prisma", "prisma:createGuild", `Creating new guild entry: Name: ${guild.name} ID: ${guild.id} Owner: ${(await guild.fetchOwner()).user.tag}`, { timestamp: true });
   await prisma.guild.create({
     data: {
       id: guild.id,
@@ -58,7 +58,7 @@ export async function createUser(user: GuildMember | APIInteractionGuildMember):
 
   if (has) return;
 
-  Logger("prisma", "prisma:createUser", `Creating new user entry: ${user.user.username}#${user.user.discriminator} ${user.user.id}`, { timestamp: true });
+  Logger("prisma", "prisma:createUser", `Creating new user entry: ${user.user.username}#${user.user.discriminator} (${user.user.id})`, { timestamp: true });
   await prisma.users.create({
     data: {
       id: user.user.id,
@@ -66,8 +66,8 @@ export async function createUser(user: GuildMember | APIInteractionGuildMember):
   });
   await prisma.leveling.create({
     data: {
-      userId: user.user.id,
-    },
+      userId: user.user.id as string
+    }
   });
 }
 
@@ -83,7 +83,7 @@ export async function findUser(user: GuildMember | APIInteractionGuildMember): P
   return mem as Users;
 }
 
-export async function getSettings(guild: Guild): Promise<unknown> {
+export async function getSettings(guild: Guild): Promise<Settings> {
   const find = await prisma.settings.findFirst({
     where: {
       guildId: guild.id as string,

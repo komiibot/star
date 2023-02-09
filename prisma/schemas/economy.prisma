@@ -7,7 +7,6 @@ model Leveling {
     prestige  Int    @default(0)
     userId    String
     user      Users  @relation(fields: [userId], references: [id])
-    channel String
 
     @@id([userId])
 }
@@ -42,6 +41,9 @@ model AuctionHouse {
     economyGuildUserId  String?
     economyGuildGuildId String?
 }
+
+
+
 
 
 

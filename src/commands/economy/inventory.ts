@@ -11,7 +11,7 @@ export class InventoryCommand extends Command {
   }
 
   public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    // await interaction.deferReply();
 
     const user = await this.container.prisma.inventory.findMany({
       where: {
@@ -21,7 +21,7 @@ export class InventoryCommand extends Command {
 
     const items = user.map((x) => x.item);
 
-    await interaction.editReply({
+    await interaction.reply({
       embeds:
         items.length >= 1 ? [new CustomEmbed().setDescription(items.join(", ")).setColor()] : [new CustomEmbed().setDescription("You have no items in your inventory").setColor()],
     });

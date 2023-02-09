@@ -1,7 +1,8 @@
 import { Events, Listener, Logger } from "@sapphire/framework";
 import { ApplyOptions } from "@sapphire/decorators";
 import { IS_PROD } from "#utils/consts";
-import { syncItems } from "#modules/economy/inventory";
+import { syncItems } from "../modules/economy/inventory";
+import { redis } from "../index";
 
 @ApplyOptions<Listener.Options>({ once: true })
 export class UserListener extends Listener<typeof Events.ClientReady> {
@@ -17,7 +18,10 @@ export class UserListener extends Listener<typeof Events.ClientReady> {
     this.container.log("info", "Events.Ready", `Successfully loaded ${this.container.stores.get("commands").size} commands!`, { timestamp: true, color: color });
     this.container.log("info", "Events.Ready", `Serving ${guilds} harem${guilds > 1 ? "s" : ""}!`, { timestamp: true, color: color });
     this.container.log("prisma", "[PRISMA]", "Successfully connected to the database.", { timestamp: true });
-    this.container.log("custom", "[REDIS]", "Successfully connected to redis.", { timestamp: true });
+    
+    await redis.connect().then(() => {
+      this.container.log("custom", "[REDIS]", "Successfully connected to redis.", { timestamp: true });
+    });
 
     await syncItems();
   }

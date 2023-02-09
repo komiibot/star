@@ -1,9 +1,6 @@
 import { Events, Listener } from "@sapphire/framework";
-import { ChannelType, Message } from "discord.js";
+import { ChannelType, Message, MessageFlags } from "discord.js";
 import { prisma } from "../index";
-import { findGuild, findUser, getSettings } from "../modules";
-import * as leveling from "../modules/economy/leveling";
-import * as inventory from "../modules/economy/inventory";
 import { CustomEmbed } from "#utils/embed";
 import { sendCaptcha } from "#utils/captcha";
 
@@ -11,9 +8,9 @@ export class ReadyListener extends Listener<typeof Events.MessageCreate> {
   async run(msg: Message): Promise<void | unknown> {
     if (msg.author.bot || msg.author.id === msg.client.user!.id || msg.channel.type === ChannelType.DM) return;
 
-    await findUser(msg.member!);
-    await findGuild(msg.guild!);
-    await getSettings(msg.guild!);
+    await this.container.settings.findUser(msg.member!);
+    await this.container.settings.findGuild(msg.guild!);
+    await this.container.settings.getSettings(msg.guild!);
 
     const settings = await prisma.settings.findFirst({
       where: {
@@ -51,8 +48,14 @@ export class ReadyListener extends Listener<typeof Events.MessageCreate> {
       setTimeout(() => msg.guild.leave(), 500);
     }
 
+    const requiresCaptcha = await this.container.redis.get(`${msg.member.id}:locked`);
+
+    if(requiresCaptcha === "1") {
+      await this.container.utils.sendCaptcha(msg);
+    }
+
     if (settings.leveling === true) {
-      return await leveling.levelHandler(msg, levels, user);
+      return await this.container.leveling.levelHandler(msg, levels, user, this.container.client);
     }
   }
 }

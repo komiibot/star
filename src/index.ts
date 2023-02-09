@@ -1,17 +1,17 @@
 import { container, SapphireClient } from "@sapphire/framework";
 import { GatewayIntentBits } from "discord.js";
 import { PrismaClient } from "@prisma/client";
-import Redis from "ioredis";
+import { createClient } from "redis";
 import { log, prisma as prismaLog } from "#utils/logger";
 import * as utils from "#utils/index";
-import * as settings from "#modules/settings";
-import * as leveling from "#modules/economy/leveling";
-import * as modules from "#modules/index";
+import { settings } from "./modules/index"
+import { leveling } from "./modules/index";
+import * as modules from "./modules/index";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const prisma = new PrismaClient();
-export const redis = new Redis();
+export const redis = createClient();
 
 container.prisma = prisma;
 container.redis = redis;

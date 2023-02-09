@@ -7,14 +7,11 @@ model Users {
     leveling     Leveling[]
     inventory    Inventory[]
     blacklisted  Boolean        @default(false)
+    createdAt    DateTime       @default(now())
     GuildUsers   GuildUsers[]
     Economy      Economy[]
     UserSettings UserSettings[]
 }
-
-
-
-
 
 model UserSettings {
     canDm  Boolean @default(false)

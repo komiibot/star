@@ -3,7 +3,7 @@ import { prisma } from "../../index";
 import { APIInteractionGuildMember, GuildMember } from "discord.js";
 import fs from "fs";
 import path from "path";
-import { createUser, findUser, getSettings } from "#modules/settings";
+import { createUser, findUser, getSettings } from "../settings";
 import { log } from "#utils/logger";
 
 let items: ItemsInterface;
@@ -44,7 +44,7 @@ export async function getInventory(member: GuildMember | APIInteractionGuildMemb
 export async function addItemToInventory(member: GuildMember | APIInteractionGuildMember, itemId: string, amount?: number) {
   await findUser(member);
 
-  if (getItems().filter((x) => x.id === itemId).length === 0) {
+  if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     console.trace();
     return log("error", "modules.economy.inventory.addItemToInventory()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
   }
@@ -69,10 +69,24 @@ export async function addItemToInventory(member: GuildMember | APIInteractionGui
   });
 }
 
+export async function hasItem(member: GuildMember | APIInteractionGuildMember, itemId: string) {
+  if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
+    return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+  }
+
+  const items = await prisma.inventory.findMany({
+    where: {
+      userId: member.user.id,
+    },
+  });
+
+  return items.some((x) => x.item === itemId);
+}
+
 export async function setItemAmount(member: GuildMember | APIInteractionGuildMember, itemId: string, amount: number) {
   await findUser(member);
 
-  if (getItems().filter((x) => x.id === itemId).length === 0) {
+  if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     console.trace();
     return log("error", "modules.economy.inventory.setItemAmount()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
   }
@@ -91,4 +105,33 @@ export async function setItemAmount(member: GuildMember | APIInteractionGuildMem
       amount: amount ?? 1,
     },
   });
+}
+
+export async function setItemDurability(member: GuildMember | APIInteractionGuildMember, itemId: string, durability: number) {
+  if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
+    return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+  }
+
+  const items = await prisma.inventory.findMany({
+    where: {
+      userId: member.user.id,
+    },
+  });
+
+  const has = items.some((x) => x.item === itemId);
+
+  if (!durability || durability <= 1) {
+    return log("error", "modules.economy.inventory.setItemDurability()", `Invalid item durability almost set for ${itemId}:${member.user.id}`);
+  }
+
+  if(has) {
+    const items = await prisma.inventory.update({
+      where: {
+        userId_item: { userId: member.user.id, item: itemId },
+      },
+      data: {
+        durability: durability
+      }
+    });
+  }
 }
