@@ -3,10 +3,15 @@ import { redis } from "../index";
 import dayjs from "dayjs";
 import { log } from "./logger";
 import { CustomEmbed } from "./embed";
+import { setLocked } from "./captcha";
 
 // how many times user has set off the anticheat before prompted with a captcha
-async function setFlagCount(id: string, count: number) {
+export async function setFlagCount(id: string, amount?: number) {
   const key = `${id}:flags`;
+
+  if(amount) {
+    await redis.set(key, amount.toString());
+  }
 
   if (await redis.exists(key)) {
     await redis.incr(key);
@@ -15,8 +20,19 @@ async function setFlagCount(id: string, count: number) {
   }
 }
 
+// get flag count for user
+export async function getFlagCount(id: string) {
+  const key = `${id}:flags`;
+
+  if (await redis.exists(key)) {
+    return await redis.get(key);
+  }
+  return;
+}
+
+
 // how many economy commands the user has ran
-async function getCommands(id: string) {
+export async function getCommands(id: string) {
   const key = `${id}:commands_ran`;
   if (await redis.exists(key)) {
     return await redis.get(key);
@@ -78,16 +94,35 @@ export async function run(interaction: Interaction) {
   const time = dayjs(Date.now()).diff(timeSince, "h");
 
   if ((await getCommands(user)) >= "200" && time >= 1) {
+    await setFlagCount(user);
     await logAndWebhook(interaction.member.user.username, interaction.member.user.discriminator, user, `User has used ${await getCommands(user)} commands within an hour.`, "Red");
   }
 
+  const userCreation = interaction.user.createdTimestamp;
+  const timeSinceUser = dayjs(Date.now()).diff(userCreation, "w");
+  
   // if user account isn't a week old with the bot and they are trying to use trade, flag as suspicious.
-  if (interaction.isCommand() && interaction.commandName === "rob") {
+  if (interaction.isCommand() && interaction.commandName === "trade" && timeSinceUser <= 0) {
+    await setFlagCount(user);
+    await logAndWebhook(
+      interaction.member.user.username,
+      interaction.member.user.discriminator,
+      user,
+      `User tried using the **trade** command, but their account isn't even a week old.`
+    );
+  }
+
+  if (interaction.isCommand() && interaction.commandName === "rob" && timeSinceUser <= 0) {
+    await setFlagCount(user);
     await logAndWebhook(
       interaction.member.user.username,
       interaction.member.user.discriminator,
       user,
       `User tried using the **rob** command, but their account isn't even a week old.`
     );
+  }
+
+  if(await getFlagCount(user) >= "10") {
+    return await setLocked(user, true);
   }
 }

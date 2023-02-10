@@ -66,8 +66,4 @@ client.on("error", (err) => {
   log("error", "Error", `DiscordAPIError: ${err}`, { timestamp: true, client: client }); 
 });
 
-// setTimeout(async () => {
-//   await runJobs();
-// }, 15000)
-
 client.login(process.env.TOKEN);

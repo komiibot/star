@@ -1,4 +1,4 @@
-import { Economy, Leveling, Inventory } from "./economy"
+import { Economy, Leveling, Inventory, Games } from "./economy"
 import { GuildUsers } from "./guild"
 
 model Users {
@@ -11,7 +11,9 @@ model Users {
     GuildUsers   GuildUsers[]
     Economy      Economy[]
     UserSettings UserSettings[]
+    Games        Games[]
 }
+
 
 model UserSettings {
     canDm  Boolean @default(false)

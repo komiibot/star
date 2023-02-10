@@ -7,3 +7,4 @@ export * from "./tax";
 export * from "./captcha";
 export * from "./codeblock";
 export * as anticheat from "./anticheat";
+export * from "./clean";

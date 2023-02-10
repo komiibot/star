@@ -1,12 +1,10 @@
-import { Command } from "@sapphire/framework";
-import { Client, Message, EmbedBuilder } from "discord.js";
+import { Args, Command } from "@sapphire/framework";
+import { Message } from "discord.js";
+import { inspect } from "node:util";
+import { fetch, FetchMethods, FetchResultTypes } from "@sapphire/fetch";
 
-async function clean(text) {
-  if (text && text.constructor.name == "Promise") text = await text;
-  if (typeof text !== "string") text = require("util").inspect(text, { depth: 1 });
-
-  text = text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
-  return text;
+interface HastebinResponse {
+  key: string;
 }
 
 export class EvalCommand extends Command {
@@ -16,48 +14,78 @@ export class EvalCommand extends Command {
       name: "eval",
       aliases: ["e"],
       preconditions: ["developerOnly"],
-      description: "Run javascript code from the bot.",
+      description: "Evaluate some code.",
     });
   }
 
-  public async messageRun(msg: Message) {
-    if (msg.content.toLowerCase().includes("client.token")) return;
-    let args: any = msg.content.split(" ").splice(1);
+  private async post(result: string, language = "ts") {
+    const hastebinUrl = "https://hst.sh";
+    const { key } = await fetch<HastebinResponse>(
+      `${hastebinUrl}/documents`,
+      {
+        method: FetchMethods.Post,
+        body: result,
+      },
+      FetchResultTypes.JSON
+    );
+    return `${hastebinUrl}/${key}.${language}`;
+  }
 
-    const clean = async (text) => {
-      if (text && text.constructor.name == "Promise") text = await text;
-      if (typeof text !== "string") text = require("util").inspect(text, { depth: 1 });
+  private async eval(msg: Message, args: Args, code: string) {
+    let success: boolean;
+    let result: unknown;
 
-      text = text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
-      return text;
-    };
+    const message = msg;
 
-    if (/--silent|--s/.test(args[0])) {
-      args = msg.content.split(" ").splice(2).join(" ");
-      const evaled = eval(args);
-      return console.log(await clean(evaled));
-    } else {
-      try {
-        let evaled = await eval(args.join(" "));
-        if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
+    try {
+      if (args.getFlags("async")) code = `(async () => {\n${code}\n})();`;
 
-        const cleaned = await clean(evaled);
+      result = eval(code);
 
-        if(["TOKEN", "process.env", "token", "process.env.TOKEN", "this.container.client.guilds.forEach", "this.container.client.guilds.map"].some((e) => cleaned.includes(e))) return;
-
-        let input = `**Input**\n\`\`\`${(args as any).join(" ")}\`\`\`\n**Output**:\n\`\`\`${cleaned}\`\`\``;
-        let embed = new EmbedBuilder().setDescription(input).setTimestamp().setColor("#91e3e2").setFooter({
-          text: msg.member.user.username,
-          iconURL: msg.member.user.avatarURL(),
-        });
-        return msg.channel.send({ embeds: [embed] });
-      } catch (e) {
-        let embed = new EmbedBuilder().setTitle("Error").setDescription(`An error occured. ${e}`).setTimestamp().setColor("#d9576c").setFooter({
-          text: "Eval",
-          iconURL: msg.member.user.avatarURL(),
-        });
-        return msg.channel.send({ embeds: [embed] });
-      }
+      success = true;
+    } catch (err) {
+      result = err;
+      success = false;
     }
+
+    if (typeof result !== "string") {
+      result =
+        result instanceof Error
+          ? result.stack
+          : args.getFlags("json")
+          ? JSON.stringify(result, null, 4)
+          : inspect(result, {
+              depth: Number(args.getOption("depth") ?? 0) || 0,
+              showHidden: args.getFlags("showHidden", "hidden"),
+            });
+    }
+    return {
+      success,
+      result: this.container.utils.clean(result as string),
+    };
+  }
+
+  public async messageRun(msg: Message, args: Args) {
+    let code = await args.rest("string");
+
+    const { result, success } = await this.eval(msg, args, code);
+
+    if (!success) {
+      return msg.channel.send({
+        embeds: [new this.container.utils.CustomEmbed(true, result).setFooter({ text: msg.author.username, iconURL: msg.author.avatarURL() }).setTimestamp()],
+      });
+    }
+
+    return msg.channel.send({
+      embeds: [
+        new this.container.utils.CustomEmbed()
+          .setTitle("Input")
+          .setDescription(code.length > 2000 ? await this.post(code) : this.container.utils.wrapCodeBlock(code))
+          .addFields({ name: "Output", value: this.container.utils.wrapCodeBlock(result) })
+          .setFooter({ text: msg.author.username, iconURL: msg.author.avatarURL() })
+          .setTimestamp()
+          .setColor(),
+      ],
+    });
   }
 }

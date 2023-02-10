@@ -4,6 +4,7 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { GuildMember } from "discord.js";
 import { CustomEmbed } from "#utils/embed";
 import { anticheat } from "#utils/index";
+import dayjs from "dayjs";
 
 @ApplyOptions<Command.Options>({
   preconditions: ["blacklistCheck"],
@@ -56,6 +57,15 @@ export class RobCommand extends Command {
 
       if (!user) {
         return interaction.editReply("I could not find that user.");
+      }
+
+      const timeSince = interaction.user.createdTimestamp
+      const time = dayjs(Date.now()).diff(timeSince, "w");
+
+      if (time <= 0) {
+        return interaction.editReply({
+          embeds: [new CustomEmbed(true, "Your account must be a week old to use this command.")],
+        });
       }
 
       // await anticheat.run(interaction);
