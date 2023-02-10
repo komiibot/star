@@ -8,6 +8,7 @@ import { settings } from "./modules/index"
 import { leveling } from "./modules/index";
 import * as modules from "./modules/index";
 import dotenv from "dotenv";
+import { bree } from "./cron";
 dotenv.config();
 
 export const prisma = new PrismaClient();
@@ -21,6 +22,7 @@ container.utils = utils;
 container.modules = modules;
 container.settings = settings;
 container.leveling = leveling;
+container.cron = bree;
 
 declare module "@sapphire/pieces" {
   interface Container {
@@ -28,6 +30,7 @@ declare module "@sapphire/pieces" {
     redis: typeof redis;
     log: typeof log;
     prismaLog: typeof prismaLog;
+    cron: typeof bree;
     utils: typeof utils;
     modules: typeof modules;
     settings: typeof settings;

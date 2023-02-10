@@ -39,7 +39,9 @@ export class PollCommand extends Command {
       }
     } catch (e) {
       await this.container.log("error", "commands.economy", `Something went wrong with command use: ${e.stack}`, { timestamp: true, client: this.container.client });
-      await interaction.editReply({ embeds: [new CustomEmbed(true, "Something went wrong trying to run that command, this has been logged to our developers.")] });
+      await interaction.editReply({
+        embeds: [new CustomEmbed(true, "Something went wrong trying to run the command.").setFooter({ text: "This has been logged to our developers." })],
+      });
     }
   }
 }
