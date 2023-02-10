@@ -8,24 +8,23 @@ export const bree = new Bree({
 
   workerMessageHandler: async (msg) => {
     if (msg.message) {
-      await log("custom", "Komi.Jobs", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
+      await log("custom", "[JOBS]", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
     }
   },
   errorHandler: async (msg) => {
-    await log("error", "Komi.Jobs", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
+    await log("error", "[JOBS]", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
   },
 
   jobs: [
     {
         name: "resetCommands",
-        interval: "1h"
+        interval: "10s"
     }
   ]
 });
 
 export default async function runJobs() {
-  const graceful = new Graceful({ brees: [bree] });
-  graceful.listen();
+  await log("custom", "[JOBS]", "Getting cron jobs ready.", { timestamp: true, color: "#6de7ed" })
 
   await bree.start();
 }

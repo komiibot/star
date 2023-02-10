@@ -1,5 +1,5 @@
-import { Leveling, Settings, Users } from "@prisma/client";
-import { APIInteractionGuildMember, Guild, GuildMember } from "discord.js";
+import { Economy, Leveling, Settings, Users } from "@prisma/client";
+import { APIInteractionGuildMember, Guild, GuildMember, User } from "discord.js";
 import { prisma } from "../index";
 import { log as Logger } from "#utils/logger";
 
@@ -113,6 +113,18 @@ export async function getSettingsById(guild: string): Promise<unknown> {
         guildId: guild,
       },
     });
+
+  return find!;
+}
+
+export async function getEconomyUser(member: GuildMember): Promise<Economy> {
+  const find = await prisma.economy.findFirst({
+    where: {
+      userId: member.id as string,
+    },
+  });
+
+  if (!find) return;
 
   return find!;
 }

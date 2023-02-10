@@ -38,7 +38,7 @@ export class PollCommand extends Command {
         await interaction.editReply({ embeds: [new CustomEmbed(true, "You don't own that item.")] });
       }
     } catch (e) {
-      await this.container.log("error", "commands.economy", `Something went wrong with command use: ${e.stack}`, { timestamp: true, client: this.container.client });
+      await this.container.log("error", "commands.economy", `Something went wrong with command: use\n${e.stack}`, { timestamp: true, client: this.container.client });
       await interaction.editReply({
         embeds: [new CustomEmbed(true, "Something went wrong trying to run the command.").setFooter({ text: "This has been logged to our developers." })],
       });

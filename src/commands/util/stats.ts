@@ -28,25 +28,29 @@ export class StatsCommand extends Command {
     return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
   }
 
-  private msToDHM(ms: number, maxPrecission = 3) {
-    const duration = moment.duration(ms);
-
-    const items = [];
-    items.push({ timeUnit: "d", value: Math.floor(duration.asDays()) });
-    items.push({ timeUnit: "h", value: duration.hours() });
-    items.push({ timeUnit: "m", value: duration.minutes() });
-    items.push({ timeUnit: "s", value: duration.seconds() });
-
-    const formattedItems = items.reduce((accumulator, { value, timeUnit }) => {
-      if (accumulator.length >= maxPrecission || (accumulator.length === 0 && value === 0)) {
-        return accumulator;
-      }
-
-      accumulator.push(`${value}${timeUnit}`);
-      return accumulator;
-    }, []);
-
-    return formattedItems.length !== 0 ? formattedItems.join(" ") : "-";
+  private msToDHM(duration: number) {
+    const portions: string[] = [];
+  
+    const msInHour = 1000 * 60 * 60;
+    const hours = Math.trunc(duration / msInHour);
+    if (hours > 0) {
+      portions.push(hours + 'h');
+      duration = duration - (hours * msInHour);
+    }
+  
+    const msInMinute = 1000 * 60;
+    const minutes = Math.trunc(duration / msInMinute);
+    if (minutes > 0) {
+      portions.push(minutes + 'm');
+      duration = duration - (minutes * msInMinute);
+    }
+  
+    const seconds = Math.trunc(duration / 1000);
+    if (seconds > 0) {
+      portions.push(seconds + 's');
+    }
+  
+    return portions.join(' ');
   }
 
   public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
@@ -62,17 +66,17 @@ export class StatsCommand extends Command {
             .setDescription(
               wrapCodeBlock(`fix
 ID: ${this.container.client.id}
-Users: ${this.container.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0)}
-Guilds: ${(await this.container.client.guilds.fetch()).size}
+Users: ${this.container.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0).toLocaleString()}
+Guilds: ${(await this.container.client.guilds.fetch()).size.toLocaleString()}
 ---------- INFO ---------
 Platform: ${platform.type()}
-Uptime: ${this.msToDHM(os.time().uptime, 4)}
+Uptime: ${this.msToDHM(this.container.client.uptime)}
 Version: ${this.container.utils.VERSION}
 Library: discord.js v${getVersion("discord.js")}Node: ${process.version}
 ---------- CPU ----------
 Manufacturer: ${cpu.manufacturer}
 Cores: ${cpu.cores}
-Speed: ${cpu.speed}
+Speed: ${cpu.speed} MHz
 ---------- MEMORY ----------
 Total: ${this.bytesToSize(mem.total)}
 Used: ${this.bytesToSize(mem.used)}

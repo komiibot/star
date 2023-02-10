@@ -14,7 +14,7 @@ export class EvalCommand extends Command {
     super(context, {
       ...options,
       name: "eval",
-      aliases: [],
+      aliases: ["e"],
       preconditions: ["developerOnly"],
       description: "Run javascript code from the bot.",
     });

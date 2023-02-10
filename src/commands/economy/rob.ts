@@ -55,7 +55,7 @@ export class RobCommand extends Command {
       });
 
       if (!user) {
-        await this.container.settings.createUser(getUser as unknown as GuildMember);
+        return interaction.editReply("I could not find that user.");
       }
 
       // await anticheat.run(interaction);

@@ -9,6 +9,7 @@ import { leveling } from "./modules/index";
 import * as modules from "./modules/index";
 import dotenv from "dotenv";
 import { bree } from "./cron";
+import runJobs from "./cron/bree";
 dotenv.config();
 
 export const prisma = new PrismaClient();
@@ -22,6 +23,7 @@ container.utils = utils;
 container.modules = modules;
 container.settings = settings;
 container.leveling = leveling;
+container.economy = prisma.economy;
 container.cron = bree;
 
 declare module "@sapphire/pieces" {
@@ -35,6 +37,7 @@ declare module "@sapphire/pieces" {
     modules: typeof modules;
     settings: typeof settings;
     leveling: typeof leveling;
+    economy: typeof prisma.economy;
   }
 }
 
@@ -48,7 +51,7 @@ declare module "@sapphire/framework" {
 const client = new SapphireClient({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
   loadMessageCommandListeners: true,
-  defaultPrefix: "k?",
+  defaultPrefix: ["k?", "k"],
 });
 
 process.on("unhandledRejection", (err: any) => {
@@ -58,5 +61,13 @@ process.on("unhandledRejection", (err: any) => {
 process.on("uncaughtException", (err) => {
   log("error", "Error", `Unhandled Exception: ${err}`, { timestamp: true, client: client });
 });
+
+client.on("error", (err) => {
+  log("error", "Error", `DiscordAPIError: ${err}`, { timestamp: true, client: client }); 
+});
+
+// setTimeout(async () => {
+//   await runJobs();
+// }, 15000)
 
 client.login(process.env.TOKEN);

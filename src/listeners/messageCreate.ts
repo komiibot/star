@@ -4,7 +4,7 @@ import { prisma } from "../index";
 import { CustomEmbed } from "#utils/embed";
 import { sendCaptcha } from "#utils/captcha";
 
-export class ReadyListener extends Listener<typeof Events.MessageCreate> {
+export class MessageListener extends Listener<typeof Events.MessageCreate> {
   async run(msg: Message): Promise<void | unknown> {
     if (msg.author.bot || msg.author.id === msg.client.user!.id || msg.channel.type === ChannelType.DM) return;
 
