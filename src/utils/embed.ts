@@ -7,7 +7,7 @@ export class CustomEmbed extends EmbedBuilder {
 
     if (error) {
       super.setTitle(`<:failed:1067965647335731290> ${title ? title : ""}`);
-      super.setColor("#91e3e2");
+      super.setColor("#a8324a");
       super.setDescription(text);
 
       return this;
@@ -28,7 +28,7 @@ export class CustomEmbed extends EmbedBuilder {
   }
 
   setColor(color?: ColorResolvable): this {
-    if (!color) color = "#d5e4eb";
+    if (!color) color = "#91e3e2";
     super.setColor(color as ColorResolvable);
 
     return this;

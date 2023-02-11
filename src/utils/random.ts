@@ -8,7 +8,7 @@ export const arrayShuffle = function (array: string[]) {
   return array;
 };
 
-export const percentageChance = function (values: string[], chances: string[] | number[], multiple?: boolean) {
+export const percentageChance = function (values: any[], chances: string[] | number[], multiple?: boolean) {
   for (var i = 0, pool = []; i < chances.length; i++) {
     for (var i2 = 0; i2 < chances[i]; i2++) {
       pool.push(i);

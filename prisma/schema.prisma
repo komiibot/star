@@ -62,6 +62,7 @@ model AuctionHouse {
 }
 
 model Games {
+  id     Int     @default(autoincrement())
   name   String
   won    Boolean
   bet    BigInt
@@ -73,7 +74,7 @@ model Games {
 
   createdAt DateTime @default(now())
 
-  @@id([userId, name])
+  @@id([userId, name, id])
 }
 
 model Economy {

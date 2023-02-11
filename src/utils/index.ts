@@ -8,3 +8,5 @@ export * from "./captcha";
 export * from "./codeblock";
 export * as anticheat from "./anticheat";
 export * from "./clean";
+export * from "./hastebin";
+export * as games from "./games";

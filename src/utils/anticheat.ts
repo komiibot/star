@@ -122,7 +122,7 @@ export async function run(interaction: Interaction) {
     );
   }
 
-  if(await getFlagCount(user) >= "10") {
+  if(await getFlagCount(user) >= "20") {
     return await setLocked(user, true);
   }
 }

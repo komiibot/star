@@ -69,14 +69,14 @@ export async function addItemToInventory(member: GuildMember | APIInteractionGui
   });
 }
 
-export async function hasItem(member: GuildMember | APIInteractionGuildMember, itemId: string) {
+export async function hasItem(member: string, itemId: string) {
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
   }
 
   const items = await prisma.inventory.findMany({
     where: {
-      userId: member.user.id,
+      userId: member,
     },
   });
 

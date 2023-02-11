@@ -54,12 +54,12 @@ export async function log(level: string, title: string, msg: string, options?: O
     }
     case "error": {
       const date = dayjs(new Date()).format('DD/MM/YYYY');
-      upsertFile(`./logs/${date.replaceAll("/", "-")}_error.log`, util.format(`${timestamp ? `[${timestamp}]` : ""} ${title} | ${msg}\n`));
+      upsertFile(`./logs/${date.replaceAll("/", "-")}_error.log`, util.format(`${timestamp ? `[${timestamp}]` : ""} ${title} | ${msg}\n\n`));
       console.log(colors.red(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "debug": {
-      console.log(colors.cyan(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
+      console.log(colors.yellow(`${timestamp ? `[${timestamp}]:` : ""} ${title} | ${msg}`));
       break;
     }
     case "prisma": {

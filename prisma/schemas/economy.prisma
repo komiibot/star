@@ -43,17 +43,19 @@ model AuctionHouse {
 }
 
 model Games {
+    id     Int     @default(autoincrement())
     name   String
     won    Boolean
     bet    BigInt
     earned Int?
     xp     Int?
 
-    userId    String
-    user      Users    @relation(fields: [userId], references: [id])
+    userId String
+    user   Users  @relation(fields: [userId], references: [id])
 
     createdAt DateTime @default(now())
-    @@id([userId, name])
+
+    @@id([userId, name, id])
 }
 
 model Economy {

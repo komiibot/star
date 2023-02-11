@@ -51,7 +51,7 @@ export class TopCommand extends Subcommand {
   public async getLeaderboards(interaction: Subcommand.ChatInputCommandInteraction) {
     await interaction.deferReply();
 
-    return interaction.reply({ content: "TODO" });
+    return interaction.editReply({ content: "TODO" });
   }
 
   public async getLevels(interaction: Subcommand.ChatInputCommandInteraction) {
