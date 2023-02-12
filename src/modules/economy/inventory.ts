@@ -21,6 +21,18 @@ export function getItems() {
   return items as ItemsInterface;
 }
 
+export function listItems() {
+  const data = getItems();
+
+  let items = [];
+
+  for (let item in data) {
+    items.push({ name: data[item].id, value: data[item].id });
+  }
+
+  return items;
+}
+
 export async function syncItems(): Promise<any> {
   await prisma.item.deleteMany({});
   return await prisma.item.createMany({
@@ -69,7 +81,7 @@ export async function addItemToInventory(member: GuildMember | APIInteractionGui
   });
 }
 
-export async function hasItem(member: string, itemId: string) {
+export async function getItem(member: string, itemId: string) {
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
   }
@@ -81,6 +93,31 @@ export async function hasItem(member: string, itemId: string) {
   });
 
   return items.some((x) => x.item === itemId);
+}
+
+export async function hasItem(member: string, itemId: string, amount?: number): Promise<Boolean | null> {
+  if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
+    log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+    return null;
+  }
+
+  const items = await prisma.inventory.findMany({
+    where: {
+      userId: member,
+    },
+  });
+
+  if(!items) return null;
+
+  if (amount !== undefined && items.find((x) => x.item === itemId).amount >= amount) {
+    return true;
+  }
+
+  if (items.find((x) => x.item === itemId).amount > 0) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function setItemAmount(member: GuildMember | APIInteractionGuildMember, itemId: string, amount: number) {
@@ -124,14 +161,14 @@ export async function setItemDurability(member: GuildMember | APIInteractionGuil
     return log("error", "modules.economy.inventory.setItemDurability()", `Invalid item durability almost set for ${itemId}:${member.user.id}`);
   }
 
-  if(has) {
+  if (has) {
     const items = await prisma.inventory.update({
       where: {
         userId_item: { userId: member.user.id, item: itemId },
       },
       data: {
-        durability: durability
-      }
+        durability: durability,
+      },
     });
   }
 }

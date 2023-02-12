@@ -4,11 +4,13 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { CustomEmbed } from "#utils/embed";
 import { TextChannel } from "discord.js";
 import { ItemsInterface } from "#types/economy.type";
+import { hasItem, listItems } from "../../modules/economy/inventory";
 
 @ApplyOptions<Command.Options>({
   preconditions: ["blacklistCheck"],
   description: "Join our official server to use the auction house. https://discord.gg/komibot",
 })
+
 export class AuctionHouseCommand extends Subcommand {
   public constructor(context: Subcommand.Context, options: Subcommand.Options) {
     super(context, {
@@ -37,7 +39,7 @@ export class AuctionHouseCommand extends Subcommand {
             command
               .setName("create")
               .setDescription("List some items to create an auction!")
-              .addStringOption((option) => option.setName("item").setDescription("The item you want to auction off.").setAutocomplete(true).setRequired(true))
+              .addStringOption((option) => option.setName("item").setDescription("The item you want to auction off.").setChoices(...listItems() as any).setRequired(true))
               .addNumberOption((option) => option.setName("amount").setDescription("Amount of them item you are auctioning.").setRequired(true))
               .addNumberOption((option) => option.setName("price").setDescription("The Price of the item you're auctioning, others will pay this amount.").setRequired(true))
           )
@@ -62,18 +64,30 @@ export class AuctionHouseCommand extends Subcommand {
     const amount = interaction.options.getNumber("amount");
     let price = interaction.options.getNumber("price");
 
-    const inventory = await this.container.modules.inventory.getInventory(interaction?.member);
+    // const inventory = await this.container.modules.inventory.getInventory(interaction?.member);
     const emoji = items.find((x: ItemsInterface) => x.id === item).emoji;
     const itemName = items.find((x: ItemsInterface) => x.id === item).name;
 
-    if (!inventory.length) return interaction.editReply({ embeds: [new CustomEmbed(true, `Something went wrong trying to execute that command.`)] });
+    // if (!inventory.length) return interaction.editReply({ embeds: [new CustomEmbed(true, `Something went wrong trying to execute that command.`)] });
 
     // sanity checks
-    if (inventory.find((x) => x.item.includes(item)).amount === 0 || !inventory.find((x) => x.item === item) || inventory.filter((x) => x.item.includes(item)).length === 0) {
+    // if (inventory.find((x) => x.item.includes(item)).amount === 0 || !inventory.find((x) => x.item === item) || inventory.filter((x) => x.item.includes(item)).length === 0) {
+    //   return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${item}`)] });
+    // }
+
+    // if (inventory.find((x) => x.item).amount <= amount) {
+    //   return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${amount} ${item}${amount > 1 ? "'s" : ""}`)] });
+    // }
+
+    console.log(await hasItem(interaction.user.id, item));
+
+    if(await hasItem(interaction.user.id, item) === false) {
+      console.log("test")
       return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${item}`)] });
     }
 
-    if (inventory.find((x) => x.item).amount <= amount) {
+    if(await hasItem(interaction.user.id, item, amount) === false) {
+      console.log("test")
       return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${amount} ${item}${amount > 1 ? "'s" : ""}`)] });
     }
 

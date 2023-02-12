@@ -81,6 +81,7 @@
     "request": "^2.88.2",
     "skia-canvas": "^1.0.1",
     "soundoftext-js": "^1.0.2",
+    "strategy-sim": "^1.0.1",
     "systeminformation": "^5.17.8",
     "tsconfig-paths": "^4.1.2",
     "util": "^0.12.5",
