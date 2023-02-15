@@ -2,7 +2,9 @@ import { Command } from "@sapphire/framework";
 import { TextChannel } from "discord.js";
 
 export async function postToChannel(interaction: Command.ChatInputCommandInteraction, channel: TextChannel, time: number, emoji: string, itemName: string, amount: number, price: number) {
-    const hook = await channel.send({
+  console.log("Hi")  
+  
+  const hook = await channel.send({
         embeds: [
           new this.container.utils.CustomEmbed()
             .setFooter({ text: "Auction House" })

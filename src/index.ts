@@ -51,7 +51,7 @@ declare module "@sapphire/framework" {
 const client = new SapphireClient({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
   loadMessageCommandListeners: true,
-  defaultPrefix: ["k?", "k"],
+  defaultPrefix: ["k?", "k", "?"],
 });
 
 process.on("unhandledRejection", (err: any) => {

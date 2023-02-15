@@ -64,11 +64,11 @@ export class AuctionHouseCommand extends Subcommand {
     const amount = interaction.options.getNumber("amount");
     let price = interaction.options.getNumber("price");
 
-    // const inventory = await this.container.modules.inventory.getInventory(interaction?.member);
+    const inventory = await this.container.modules.inventory.getInventory(interaction?.member);
     const emoji = items.find((x: ItemsInterface) => x.id === item).emoji;
     const itemName = items.find((x: ItemsInterface) => x.id === item).name;
 
-    // if (!inventory.length) return interaction.editReply({ embeds: [new CustomEmbed(true, `Something went wrong trying to execute that command.`)] });
+    if (!inventory.length) return interaction.editReply({ embeds: [new CustomEmbed(true, `You have no items in your inventory.`)] });
 
     // sanity checks
     // if (inventory.find((x) => x.item.includes(item)).amount === 0 || !inventory.find((x) => x.item === item) || inventory.filter((x) => x.item.includes(item)).length === 0) {
@@ -79,15 +79,21 @@ export class AuctionHouseCommand extends Subcommand {
     //   return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${amount} ${item}${amount > 1 ? "'s" : ""}`)] });
     // }
 
+    if(amount < 1 || isNaN(amount)) {
+      return interaction.editReply({ embeds: [new CustomEmbed(true, `Item amount must be greater than 0.`)] });
+    }
+
+    if(price < 1 || isNaN(price)) {
+      return interaction.editReply({ embeds: [new CustomEmbed(true, `Item price must be greater than 0.`)] });
+    }
+
     console.log(await hasItem(interaction.user.id, item));
 
     if(await hasItem(interaction.user.id, item) === false) {
-      console.log("test")
       return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${item}`)] });
     }
 
     if(await hasItem(interaction.user.id, item, amount) === false) {
-      console.log("test")
       return interaction.editReply({ embeds: [new CustomEmbed(true, `You don't own ${amount} ${item}${amount > 1 ? "'s" : ""}`)] });
     }
 

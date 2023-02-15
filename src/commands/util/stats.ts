@@ -28,35 +28,42 @@ export class StatsCommand extends Command {
     return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
   }
 
-  private msToDHM(duration: number) {
-    const portions: string[] = [];
+  private msToDHM(miliseconds: number) {
+    const totalSeconds = Math.floor(miliseconds / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const days = Math.floor(totalHours / 24);
   
-    const msInHour = 1000 * 60 * 60;
-    const hours = Math.trunc(duration / msInHour);
-    if (hours > 0) {
-      portions.push(hours + 'h');
-      duration = duration - (hours * msInHour);
+    const seconds = totalSeconds % 60;
+    const minutes = totalMinutes % 60;
+    const hours = totalHours % 24;
+
+    let format = [];
+
+    if(days >= 1) {
+      format.push(`${days}d`);
     }
-  
-    const msInMinute = 1000 * 60;
-    const minutes = Math.trunc(duration / msInMinute);
-    if (minutes > 0) {
-      portions.push(minutes + 'm');
-      duration = duration - (minutes * msInMinute);
+
+    if(hours >= 1) {
+      format.push(`${hours}h`);
     }
-  
-    const seconds = Math.trunc(duration / 1000);
-    if (seconds > 0) {
-      portions.push(seconds + 's');
+
+    if(minutes >= 1) {
+      format.push(`${minutes}m`);
     }
-  
-    return portions.join(' ');
+
+    if(seconds >= 1) {
+      format.push(`${seconds}s`);
+    }
+    
+    return `${format.join(" ").toString()}`;
   }
 
   public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await interaction.deferReply();
     const cpu = await os.cpu();
     const mem = await os.mem();
+    const os2 = require("node:os");
 
     try {
       return await interaction.editReply({
@@ -72,14 +79,14 @@ Guilds: ${(await this.container.client.guilds.fetch()).size.toLocaleString()}
 Platform: ${platform.type()}
 Uptime: ${this.msToDHM(this.container.client.uptime)}
 Version: ${this.container.utils.VERSION}
-Library: discord.js v${getVersion("discord.js")}Node: ${process.version}
+Library: D.JSNode: ${process.version}
 ---------- CPU ----------
 Manufacturer: ${cpu.manufacturer}
 Cores: ${cpu.cores}
 Speed: ${cpu.speed} MHz
 ---------- MEMORY ----------
 Total: ${this.bytesToSize(mem.total)}
-Used: ${this.bytesToSize(mem.used)}
+Used: ${this.bytesToSize(os2.totalmem() - os2.freemem())}
 `)
             )
             .setColor(),

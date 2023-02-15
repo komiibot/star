@@ -1,6 +1,7 @@
 import { ChatInputCommand, Command } from "@sapphire/framework";
 import { isMessageInstance } from "@sapphire/discord.js-utilities";
 import { ApplyOptions } from "@sapphire/decorators";
+import { Message } from "discord.js";
 
 @ApplyOptions<Command.Options>({
   preconditions: ["blacklistCheck"],
@@ -12,14 +13,12 @@ export class PingCommand extends Command {
   }
 
   public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    const msg = await interaction.reply({ content: `Pinging...`, ephemeral: true, fetchReply: true });
+    const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
+    interaction.editReply(`Pong! ${sent.createdTimestamp - interaction.createdTimestamp}ms`);
+  }
 
-    if (isMessageInstance(msg)) {
-      const diff = msg.createdTimestamp - interaction.createdTimestamp;
-      const ping = Math.round(this.container.client.ws.ping);
-      return interaction.editReply(`Pong!\nBOT: ${ping}ms. \nWS: ${diff}ms.`);
-    }
-
-    return interaction.editReply("Something went wrong when trying to recieve the ping.");
+  public async messageRun(msg: Message) {
+    const sent = await msg.channel.send({ content: 'Pinging...' });
+    sent.edit(`Pong! ${sent.createdTimestamp - msg.createdTimestamp}ms`);
   }
 }

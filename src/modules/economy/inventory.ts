@@ -109,11 +109,13 @@ export async function hasItem(member: string, itemId: string, amount?: number): 
 
   if(!items) return null;
 
-  if (amount !== undefined && items.find((x) => x.item === itemId).amount >= amount) {
+  if (amount !== undefined && items.some((x: ItemsInterface) => x.id === itemId).amount >= amount) {
+    log("info", "modules.economy.inventory.hasItem", `Hello yeah?`);
     return true;
   }
 
-  if (items.find((x) => x.item === itemId).amount > 0) {
+  if (items.some((x: ItemsInterface) => x.id === itemId).amount > 0) {
+    log("info", "modules.economy.inventory.hasItem", `Hello`);
     return true;
   }
 

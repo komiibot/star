@@ -23,7 +23,7 @@ export class InventoryCommand extends Command {
 
     await interaction.reply({
       embeds:
-        items.length >= 1 ? [new CustomEmbed().setDescription(items.join(", ")).setColor()] : [new CustomEmbed().setDescription("You have no items in your inventory").setColor()],
+        items.length >= 1 ? [new CustomEmbed().setDescription(items.join(", ")).setColor()] : [new CustomEmbed(true, "You have no items in your inventory.")],
     });
   }
 }
