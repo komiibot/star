@@ -109,13 +109,13 @@ export async function hasItem(member: string, itemId: string, amount?: number): 
 
   if(!items) return null;
 
+  // @ts-expect-error
   if (amount !== undefined && items.some((x: ItemsInterface) => x.id === itemId).amount >= amount) {
-    log("info", "modules.economy.inventory.hasItem", `Hello yeah?`);
     return true;
   }
 
+   // @ts-expect-error
   if (items.some((x: ItemsInterface) => x.id === itemId).amount > 0) {
-    log("info", "modules.economy.inventory.hasItem", `Hello`);
     return true;
   }
 
