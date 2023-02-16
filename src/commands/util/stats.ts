@@ -22,7 +22,7 @@ export class StatsCommand extends Command {
   private bytesToSize(bytes) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
     if (bytes === 0) return "n/a";
-    // @ts-ignore
+    // @ts-expect-error
     const i = parseInt(Math.floor(Math.log(Math.abs(bytes)) / Math.log(1024)), 10);
     if (i === 0) return `${bytes} ${sizes[i]}`;
     return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
@@ -79,7 +79,8 @@ Guilds: ${(await this.container.client.guilds.fetch()).size.toLocaleString()}
 Platform: ${platform.type()}
 Uptime: ${this.msToDHM(this.container.client.uptime)}
 Version: ${this.container.utils.VERSION}
-Library: D.JSNode: ${process.version}
+Library: D.JS
+Node: ${process.version}
 ---------- CPU ----------
 Manufacturer: ${cpu.manufacturer}
 Cores: ${cpu.cores}
@@ -93,7 +94,7 @@ Used: ${this.bytesToSize(os2.totalmem() - os2.freemem())}
         ],
       });
     } catch (err) {
-      await this.container.log("error", "commands.economy", `Something went wrong with command: stats\n${err.stack}`, { timestamp: true, client: this.container.client });
+      await this.container.log.error("commands.economy", `Something went wrong with command: stats\n${err.stack}`);
       await interaction.editReply({
         embeds: [new CustomEmbed(true, "Something went wrong trying to run the command.").setFooter({ text: "This has been logged to our developers." })],
       });

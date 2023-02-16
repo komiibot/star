@@ -11,8 +11,7 @@ dayjs.extend(LocalizedFormat);
 
 export class GuildListener extends Listener<typeof Events.GuildDelete> {
   public async run(guild: Guild) {
-    await this.container.log(
-      "info",
+    await this.container.log.info(
       "Events.GuildDelete",
       `Left guild ${guild.name} with ID: ${guild.id}.`
     );

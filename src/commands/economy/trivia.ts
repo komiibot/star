@@ -25,7 +25,7 @@ export class TriviaCommand extends Command {
       
       return interaction.editReply({ content: `${JSON.stringify(response.data)}` })
     } catch (e) {
-      await this.container.log("error", "commands.economy", `Something went wrong with command: trivia\n${e.stack}`, { timestamp: true, client: this.container.client });
+      await this.container.log.error("commands.economy", `Something went wrong with command: trivia\n${e.stack}`);
       await interaction.editReply({
         embeds: [new CustomEmbed(true, "Something went wrong trying to run the command.").setFooter({ text: "This has been logged to our developers." })],
       });

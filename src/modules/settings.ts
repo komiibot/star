@@ -1,7 +1,6 @@
 import { Economy, Leveling, Settings, Users } from "@prisma/client";
 import { APIInteractionGuildMember, Guild, GuildMember, User } from "discord.js";
-import { prisma } from "../index";
-import { log as Logger } from "#utils/logger";
+import { prisma, logger } from "../index";
 
 export async function createGuild(guild: Guild): Promise<unknown> {
   const has = await prisma.guild.findFirst({
@@ -12,7 +11,7 @@ export async function createGuild(guild: Guild): Promise<unknown> {
 
   if (has) return;
 
-  Logger("prisma", "prisma:createGuild", `Creating new guild entry: Name: ${guild.name} ID: ${guild.id} Owner: ${(await guild.fetchOwner()).user.tag}`, { timestamp: true });
+  await logger.prisma("prisma:createGuild", `Creating new guild entry: Name: ${guild.name} ID: ${guild.id} Owner: ${(await guild.fetchOwner()).user.tag}`);
   await prisma.guild.create({
     data: {
       id: guild.id,
@@ -29,7 +28,7 @@ export async function deleteGuild(guild: Guild): Promise<unknown> {
 
   if (!has) return;
 
-  Logger("prisma", "prisma:guildDelete", `Deleting entry for guild ID: ${guild.id}`, { timestamp: true });
+  await logger.prisma("prisma:guildDelete", `Deleting entry for guild ID: ${guild.id}`);
   await prisma.guild.delete({
     where: {
       id: guild.id,
@@ -58,7 +57,7 @@ export async function createUser(user: GuildMember | APIInteractionGuildMember):
 
   if (has) return;
 
-  Logger("prisma", "prisma:createUser", `Creating new user entry: ${user.user.username}#${user.user.discriminator} (${user.user.id})`, { timestamp: true });
+  await logger.prisma("prisma:createUser", `Creating new user entry: ${user.user.username}#${user.user.discriminator} (${user.user.id})`);
   await prisma.users.create({
     data: {
       id: user.user.id,

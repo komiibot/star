@@ -1,5 +1,5 @@
 export * from "./abbreviate";
-export * from "./logger";
+export * as logger from "./logger";
 export * from "./consts";
 export * from "./embed";
 export * from "./random";

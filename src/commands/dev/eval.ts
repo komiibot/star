@@ -56,8 +56,8 @@ export class EvalCommand extends Command {
     const { result, success } = await this.eval(msg, args, code);
 
     if (args.getFlags('silent')) {
-			if (!success && result) await this.container.log("error", "Eval Error", result)
-      if(success && result) await this.container.log("info", "Eval", result)
+			if (!success && result) await this.container.log.error("Eval Error", result)
+      if(success && result) await this.container.log.info("Eval", result)
 			return null;
 		}
 
@@ -67,7 +67,7 @@ export class EvalCommand extends Command {
       });
     }
 
-    this.container.log("debug", "Debug", result)
+    this.container.log.warn("Debug", result)
 
     return msg.channel.send({
       embeds: [

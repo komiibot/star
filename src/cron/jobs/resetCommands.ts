@@ -1,8 +1,10 @@
 import { redis } from "../../index";
-import { log } from "#utils/logger";
+import Logger from "#utils/logger";
+
+export const logger = new Logger();
 
 (async () => {
-  log("info", "[JOBS]", "Clearing command count from redis.");
+  logger.info("[JOBS]", "Clearing command count from redis.");
   const keys = await redis.keys("*:commands_ran");
   await redis.del(keys);
 })();

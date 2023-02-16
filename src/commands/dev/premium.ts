@@ -92,7 +92,7 @@ export class PremiumCommand extends Subcommand {
         });
       }
     } catch (err) {
-      this.container.log("error", "commands.dev.premium", `Something went wrong with command: **premium**.\n${err.stack}`, { timestamp: true, client: this.container.client });
+      this.container.log.error("commands.dev.premium", `Something went wrong with command: **premium**.\n${err.stack}`);
     }
   }
 
@@ -136,7 +136,7 @@ export class PremiumCommand extends Subcommand {
         });
       }
     } catch (err) {
-      this.container.log("error", "commands.dev.premium", `Something went wrong with command: **premium**.\n${err.stack}`, { timestamp: true, client: this.container.client });
+      this.container.log.error("commands.dev.premium", `Something went wrong with command: **premium**.\n${err.stack}`);
     }
   }
 }

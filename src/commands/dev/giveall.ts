@@ -97,8 +97,7 @@ export class BlacklistCommand extends Command {
         }).catch(() => null);
       }
     } catch (err) {
-      this.container.log("error", "commands.dev.giveAll", `Something went wrong with command: giveAll.\n${err.stack}`,
-        { timestamp: true, client: this.container.client })
+      this.container.log.error("commands.dev.giveAll", `Something went wrong with command: giveAll.\n${err.stack}`)
     }
   }
 }

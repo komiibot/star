@@ -20,9 +20,8 @@ export class GuildListener extends Listener<typeof Events.GuildCreate> {
     const humancount = humans - bots;
 
     // I don't leave the guild instantly, just incase a false positive arises
-    if(bots > humancount) {
-      await this.container.log(
-        "info",
+    if (bots > humancount) {
+      await this.container.log.info(
         "Events.GuildCreate",
         `[BOT LIST GUILD] Left guild ${guild.name} with ID: ${guild.id}. Owner: ${(await guild.fetchOwner()).user.tag} ID: ${(await guild.fetchOwner()).user.id}`
       );
@@ -52,8 +51,7 @@ export class GuildListener extends Listener<typeof Events.GuildCreate> {
     });
 
     if (g && g.blacklisted === true) {
-      await this.container.log(
-        "info",
+      await this.container.log.info(
         "Events.GuildCreate",
         `[BLACKLISTED] Left guild ${guild.name} with ID: ${guild.id}. Owner: ${(await guild.fetchOwner()).user.tag} ID: ${(await guild.fetchOwner()).user.id}`
       );
@@ -78,8 +76,7 @@ export class GuildListener extends Listener<typeof Events.GuildCreate> {
       });
     }
 
-    await this.container.log(
-      "info",
+    await this.container.log.info(
       "Events.GuildCreate",
       `Joined guild ${guild.name} with ID: ${guild.id}. Owner: ${(await guild.fetchOwner()).user.tag} ID: ${(await guild.fetchOwner()).user.id}`
     );

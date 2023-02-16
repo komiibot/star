@@ -5,7 +5,7 @@ import { Client, ColorResolvable, CommandInteraction, GuildMember, Interaction, 
 import { CustomEmbed } from "./embed";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { log } from "./logger";
+import { logger } from "../index";
 import { percentageChance } from "./random";
 import fs from "fs";
 import request from "request";
@@ -52,11 +52,10 @@ function getVoiceCaptcha() {
 }
 
 async function logAndWebhook(description: string, embedDescription: string, embedColor: ColorResolvable, result: Message | CommandInteraction) {
-  log(
-    "custom",
+  await logger.custom(
     "Anticheat.Captcha",
     description,
-    { timestamp: true, color: "#3c55b0" }
+    "#3c55b0"
   );
 
   const webhook = new WebhookClient({

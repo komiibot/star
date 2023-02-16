@@ -1,18 +1,20 @@
 import Bree from "bree";
 import Graceful from "@ladjs/graceful";
-import { log } from "#utils/logger";
+import Logger from "#utils/logger";
 import path from "path";
+
+export const logger = new Logger();
 
 export const bree = new Bree({
   root: path.join(__dirname, "jobs"),
 
   workerMessageHandler: async (msg) => {
     if (msg.message) {
-      await log("custom", "[JOBS]", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
+      await logger.custom("[JOBS]", `${msg.name} - ${msg.message}`, "#eb42a1");
     }
   },
   errorHandler: async (msg) => {
-    await log("error", "[JOBS]", `${msg.name} - ${msg.message}`, { timestamp: true, color: "#eb42a1" });
+    await logger.error("[JOBS]", `${msg.name} - ${msg.message}`);
   },
 
   jobs: [
@@ -24,7 +26,7 @@ export const bree = new Bree({
 });
 
 export default async function runJobs() {
-  await log("custom", "[JOBS]", "Getting cron jobs ready.", { timestamp: true, color: "#6de7ed" })
+  await logger.custom("[JOBS]", "Getting cron jobs ready.", "#6de7ed")
 
   await bree.start();
 }

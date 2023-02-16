@@ -130,7 +130,7 @@ export class PremiumCommand extends Subcommand {
         });
       }
     } catch (err) {
-      this.container.log("error", "commands.dev.blacklist", `Something went wrong with command: **blacklist**.\n${err.stack}`, { timestamp: true, client: this.container.client });
+      this.container.log.error("commands.dev.blacklist", `Something went wrong with command: **blacklist**.\n${err.stack}`);
     }
   }
 
@@ -197,7 +197,7 @@ export class PremiumCommand extends Subcommand {
         });
       }
     } catch (err) {
-      this.container.log("error", "commands.dev.blacklist", `Something went wrong with command: **blacklist**.\n${err.stack}`, { timestamp: true, client: this.container.client });
+      this.container.log.error("commands.dev.blacklist", `Something went wrong with command: **blacklist**.\n${err.stack}`);
     }
   }
 }

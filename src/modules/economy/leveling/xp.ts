@@ -1,7 +1,6 @@
 import { Leveling, Users } from "@prisma/client";
 import { Client, Guild, GuildMember, Interaction, Message, TextChannel, User } from "discord.js";
-import { prisma } from "../../../index";
-import { log } from "#utils/logger";
+import { prisma, logger } from "../../../index";
 import LevelingType from "#types/leveling.type";
 
 const ratelimit = 60000;
@@ -23,7 +22,7 @@ export async function GetUser(user: string) {
       },
     })) as Leveling;
   } catch (err: any) {
-    return log("error", "Leveling.GetUser()", `Something went wronI'm tryingg when trying to recieve user data.\n ${err.stack}`, { timestamp: true, client: this.container.client });
+    return await logger.error("Leveling.GetUser()", `Something went wronI'm tryingg when trying to recieve user data.\n ${err.stack}`);
   }
 }
 
@@ -45,7 +44,7 @@ export async function GetUserXP(user: string) {
       },
     })) as Leveling;
   } catch (err: any) {
-    return log("error", "Leveling.GetUserXP", `Something went wrong when trying to recieve user data.\n ${err.stack}`, { timestamp: true, client: this.container.client });
+    return await logger.error("Leveling.GetUserXP", `Something went wrong when trying to recieve user data.\n ${err.stack}`);
   }
 }
 

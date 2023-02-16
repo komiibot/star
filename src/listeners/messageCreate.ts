@@ -37,8 +37,7 @@ export class MessageListener extends Listener<typeof Events.MessageCreate> {
     });
 
     if (g && g.blacklisted === true) {
-      await this.container.log(
-        "info",
+      await this.container.log.info(
         "Events.GuildCreate",
         `[BLACKLISTED] Left guild ${msg.guild.name} with ID: ${msg.guild.id}. Owner: ${(await msg.guild.fetchOwner()).user.tag} ID: ${(await msg.guild.fetchOwner()).user.id}`
       );

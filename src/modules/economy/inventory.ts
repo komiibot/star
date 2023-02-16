@@ -4,7 +4,7 @@ import { APIInteractionGuildMember, GuildMember } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { createUser, findUser, getSettings } from "../settings";
-import { log } from "#utils/logger";
+import { logger } from "../../index";
 
 let items: ItemsInterface;
 
@@ -58,7 +58,7 @@ export async function addItemToInventory(member: GuildMember | APIInteractionGui
 
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     console.trace();
-    return log("error", "modules.economy.inventory.addItemToInventory()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
+    return logger.error("modules.economy.inventory.addItemToInventory()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
   }
 
   await prisma.inventory.create({
@@ -83,7 +83,7 @@ export async function addItemToInventory(member: GuildMember | APIInteractionGui
 
 export async function getItem(member: string, itemId: string) {
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
-    return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+    return await logger.error("modules.economy.inventory.getitem()", `Item ${itemId} does not exist.`);
   }
 
   const items = await prisma.inventory.findMany({
@@ -97,7 +97,7 @@ export async function getItem(member: string, itemId: string) {
 
 export async function hasItem(member: string, itemId: string, amount?: number): Promise<Boolean | null> {
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
-    log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+    await logger.error("modules.economy.inventory.hasItem()", `Item ${itemId} does not exist.`);
     return null;
   }
 
@@ -109,13 +109,13 @@ export async function hasItem(member: string, itemId: string, amount?: number): 
 
   if(!items) return null;
 
-  // @ts-expect-error
-  if (amount !== undefined && items.some((x: ItemsInterface) => x.id === itemId).amount >= amount) {
+  // set item to any so we can get types from x
+  if (amount !== undefined && (items as any).some((x: ItemsInterface) => x.id === itemId).amount >= amount) {
     return true;
   }
-
-   // @ts-expect-error
-  if (items.some((x: ItemsInterface) => x.id === itemId).amount > 0) {
+  
+  // set item to any so we can get types from x
+  if ((items as any).some((x: ItemsInterface) => x.id === itemId).amount > 0) {
     return true;
   }
 
@@ -127,12 +127,12 @@ export async function setItemAmount(member: GuildMember | APIInteractionGuildMem
 
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
     console.trace();
-    return log("error", "modules.economy.inventory.setItemAmount()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
+    return await logger.error("modules.economy.inventory.setItemAmount()", `An invalid item ${itemId} was almost given to: ${member.user?.id}`);
   }
 
   if (!amount || amount <= 1) {
     console.trace();
-    return log("error", "modules.economy.inventory.setItemAmount()", `Invalid item amount was almost given to: ${member.user?.id}`);
+    return await logger.error("modules.economy.inventory.setItemAmount()", `Invalid item amount was almost given to: ${member.user?.id}`);
   }
 
   await prisma.inventory.update({
@@ -148,7 +148,7 @@ export async function setItemAmount(member: GuildMember | APIInteractionGuildMem
 
 export async function setItemDurability(member: GuildMember | APIInteractionGuildMember, itemId: string, durability: number) {
   if (getItems().filter((x: ItemsInterface) => x.id === itemId).length === 0) {
-    return log("error", "modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
+    return await logger.error("modules.economy.inventory.hasItem", `Item ${itemId} does not exist.`);
   }
 
   const items = await prisma.inventory.findMany({
@@ -160,7 +160,7 @@ export async function setItemDurability(member: GuildMember | APIInteractionGuil
   const has = items.some((x) => x.item === itemId);
 
   if (!durability || durability <= 1) {
-    return log("error", "modules.economy.inventory.setItemDurability()", `Invalid item durability almost set for ${itemId}:${member.user.id}`);
+    return await logger.error("modules.economy.inventory.setItemDurability()", `Invalid item durability almost set for ${itemId}:${member.user.id}`);
   }
 
   if (has) {

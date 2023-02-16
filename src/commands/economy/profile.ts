@@ -64,7 +64,7 @@ export class ProfileCommand extends Command {
         ],
       });
     } catch (e) {
-      await this.container.log("error", "commands.economy", `Something went wrong with command: stats\n${e.stack}`, { timestamp: true, client: this.container.client });
+      await this.container.log.error("commands.economy", `Something went wrong with command: stats\n${e.stack}`);
       return await interaction.editReply({
         embeds: [new CustomEmbed(true, "Something went wrong trying to run the command.").setFooter({ text: "This has been logged to our developers." })],
       });

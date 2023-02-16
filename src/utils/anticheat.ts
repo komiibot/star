@@ -1,9 +1,10 @@
 import { ColorResolvable, Interaction, WebhookClient } from "discord.js";
 import { redis } from "../index";
 import dayjs from "dayjs";
-import { log } from "./logger";
 import { CustomEmbed } from "./embed";
 import { setLocked } from "./captcha";
+import { logger } from "../index";
+
 
 // how many times user has set off the anticheat before prompted with a captcha
 export async function setFlagCount(id: string, amount?: number) {
@@ -68,7 +69,7 @@ async function logAndWebhook(name: string, discrim: string, id: string, descript
     ],
   });
 
-  await log("custom", "Anticheat.Log", `User ${name}#${discrim} (${id}) has set off the anticheat. ${description}`, { timestamp: true, color: "#3c55b0" });
+  await logger.custom("Anticheat.Log", `User ${name}#${discrim} (${id}) has set off the anticheat. ${description}`, "#3c55b0");
 
   return webhook.destroy();
 }
